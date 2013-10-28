@@ -124,13 +124,16 @@ public class BoardView extends View {
             case MotionEvent.ACTION_MOVE:
                 if ( movingBlock != null ) {
                     x = Math.min( x, getWidth() - movingBlock.getRect().width() );
-                    if(movingBlock.orientation.equalsIgnoreCase("H"))
-                        movingBlock.getRect().offsetTo( x, movingBlock.getRect().top );
-                    else
+                    if(movingBlock.orientation.equalsIgnoreCase("H")){
+                        //if(movingBlock.getRect().left >= 0 && movingBlock.getRect().width() <= getWidth())
+                            movingBlock.getRect().offsetTo( x, movingBlock.getRect().top );
+                    }else{
                         movingBlock.getRect().offsetTo(movingBlock.getRect().left, y);
+                        invalidate();
+                    }
                     invalidate();
-                }
-                break;
+                    break;
+                 }
         }
         /*
         if ( event.getAction() == MotionEvent.ACTION_DOWN ) {

@@ -43,7 +43,7 @@ public class GameActivity extends Activity {
             public void onGlobalLayout() {
                 XMLParser parser = new XMLParser();
                 ArrayList<Puzzle> puzzles = parser.parsePuzzleFile();//(ArrayList<Puzzle>)i.getSerializableExtra("puzzles");
-                boardView.setBoard(puzzles.get(0), boardView.getWidth(), boardView.getHeight());
+                boardView.setBoard(puzzles.get(1), boardView.getWidth(), boardView.getHeight());
             }
 
         });

@@ -36,11 +36,19 @@ public class Puzzle implements Serializable{
 
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
     @Override
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
-        sb.append("Puzzle " + id);
+        sb.append("Puzzle " + id + " (Level " + level + ")");
         return sb.toString();
     }
 }
