@@ -24,13 +24,7 @@ import com.example.RushHour.GameObjects.Puzzle;
 
 import java.util.ArrayList;
 
-/**
- * Created with IntelliJ IDEA.
- * User: yngvi
- * Date: 22.10.2013
- * Time: 17:42
- * To change this template use File | Settings | File Templates.
- */
+
 public class BoardView extends View {
 
     private int m_cellWidth = 0;
@@ -42,8 +36,8 @@ public class BoardView extends View {
     Paint mPaint = new Paint();
     private OnMoveEventHandler m_moveHandler = null;
 
-    ArrayList<MyShape> mShapes = new ArrayList<MyShape>();
-    MyShape mMovingShape = null;
+    ArrayList<Block> blocks;
+    Block movingBlock = null;
     ShapeDrawable m_shape = new ShapeDrawable( new RectShape() );
     Rect m_rect = new Rect();
 
@@ -55,31 +49,20 @@ public class BoardView extends View {
 
     public void setBoard( Puzzle puzzle, int width, int height )
     {
+        blocks = new ArrayList<Block>();
         int cellWidth = width / COLUMNS;
         int cellHeight = height / ROWS;
         for(Block b: puzzle.blocks)
         {
             if(b.orientation.equalsIgnoreCase("H")){
-                mShapes.add(new MyShape(
-                        new Rect(
-                            b.left * cellWidth,
-                            b.top * cellHeight,
-                            b.size * cellWidth + cellWidth,
-                            b.top * cellHeight + cellHeight),
-                            Color.RED
-                        ));
-
+                b.setRect(b.left * cellWidth, b.top * cellHeight, b.size * cellWidth + b.left * cellWidth,b.top * cellHeight + cellHeight);
+                b.setColor(Color.RED);
+                blocks.add(b);
             }
            else{
-                mShapes.add(new MyShape(
-                        new Rect(
-                                b.left * cellWidth,
-                                b.top * cellHeight,
-                                b.left * cellWidth + cellWidth,
-                                b.size * cellHeight + cellHeight),
-                                Color.BLUE
-                ));
-
+                b.setRect(b.left * cellWidth, b.top * cellHeight, b.left * cellWidth + cellWidth, b.size * cellHeight + b.top * cellHeight);
+                b.setColor(Color.BLUE);
+                blocks.add(b);
             }
         }
         //invalidate();
@@ -102,9 +85,9 @@ public class BoardView extends View {
     public void onDraw( Canvas canvas )
     {
         drawGrid(canvas);
-        for ( MyShape shape : mShapes ) {
-            mPaint.setColor( shape.color );
-            canvas.drawRect( shape.rect, mPaint );
+        for ( Block b : blocks) {
+            mPaint.setColor( b.getColor() );
+            canvas.drawRect( b.getRect(), mPaint );
         }
     }
 
@@ -130,18 +113,21 @@ public class BoardView extends View {
         int y = (int) event.getY();
         switch ( event.getAction() ) {
             case MotionEvent.ACTION_DOWN:
-                mMovingShape = findShape( x, y );
+                movingBlock = findBlock(x, y);
                 break;
             case MotionEvent.ACTION_UP:
-                if ( mMovingShape != null ) {
-                    mMovingShape = null;
+                if ( movingBlock != null ) {
+                    movingBlock = null;
                     // emit an custom event ....
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
-                if ( mMovingShape != null ) {
-                    x = Math.min( x, getWidth() - mMovingShape.rect.width() );
-                    mMovingShape.rect.offsetTo( x, y );
+                if ( movingBlock != null ) {
+                    x = Math.min( x, getWidth() - movingBlock.getRect().width() );
+                    if(movingBlock.orientation.equalsIgnoreCase("H"))
+                        movingBlock.getRect().offsetTo( x, movingBlock.getRect().top );
+                    else
+                        movingBlock.getRect().offsetTo(movingBlock.getRect().left, y);
                     invalidate();
                 }
                 break;
@@ -159,23 +145,13 @@ public class BoardView extends View {
         m_moveHandler = handler;
     }
 
-    private MyShape findShape( int x, int y ) {
-        for ( MyShape shape : mShapes ) {
-            if ( shape.rect.contains( x, y ) ) {
-                return shape;
+    private Block findBlock(int x, int y) {
+        for ( Block b : blocks) {
+            if ( b.getRect().contains( x, y ) ) {
+                return b;
             }
         }
         return null;
-    }
-
-    private class MyShape {
-
-        MyShape( Rect r, int c) {
-            rect = r;
-            color = c;
-        }
-        Rect rect;
-        int  color;
     }
 }
 

@@ -14,6 +14,7 @@ public class Block {
     public int top;
     public int size;
     public String orientation;
+    private int color;
     private Rect rect;
 
     public Block(String orientation, int left, int top, int size){
@@ -23,7 +24,16 @@ public class Block {
         this.size = size;
     }
 
-    private void setRect(int left, int top, int right, int bottom)
+    public void setColor(int color)
+    {
+        this.color = color;
+    }
+
+    public int getColor(){
+        return this.color;
+    }
+
+    public void setRect(int left, int top, int right, int bottom)
     {
           this.rect = new Rect(left, top, right, bottom );
     }
