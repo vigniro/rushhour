@@ -16,5 +16,12 @@
             android:layout_height="wrap_content"
             android:text="Reset"
             android:onClick="buttonReset"
+        />
+    <Button
+            android:id="@+id/buttonSkip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Skip"
+            android:onClick="buttonSkip"
             />
 </LinearLayout>

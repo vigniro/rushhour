@@ -65,7 +65,7 @@ public class BoardView extends View {
                 blocks.add(b);
             }
         }
-        //invalidate();
+        invalidate();
     }
 
 

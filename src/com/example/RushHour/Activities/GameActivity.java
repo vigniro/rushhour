@@ -23,6 +23,8 @@ public class GameActivity extends Activity {
 
     BoardView boardView;
     RushHour rushHour;
+    ArrayList<Puzzle> puzzles;
+    private int currPuzzle;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +37,7 @@ public class GameActivity extends Activity {
             rushHour.set( state );
         }
             */
+        currPuzzle = 0;
         boardView = (BoardView) findViewById( R.id.boardview );
         ViewTreeObserver vto = boardView.getViewTreeObserver();
         vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -42,8 +45,8 @@ public class GameActivity extends Activity {
             @Override
             public void onGlobalLayout() {
                 XMLParser parser = new XMLParser();
-                ArrayList<Puzzle> puzzles = parser.parsePuzzleFile();//(ArrayList<Puzzle>)i.getSerializableExtra("puzzles");
-                boardView.setBoard(puzzles.get(1), boardView.getWidth(), boardView.getHeight());
+                puzzles = parser.parsePuzzleFile();//(ArrayList<Puzzle>)i.getSerializableExtra("puzzles");
+                boardView.setBoard(puzzles.get(currPuzzle), boardView.getWidth(), boardView.getHeight());
             }
 
         });
@@ -51,7 +54,12 @@ public class GameActivity extends Activity {
     }
 
     public void buttonReset(View view){
-       //Reset block positions
+        boardView.setBoard(puzzles.get(currPuzzle), boardView.getWidth(), boardView.getHeight());
+    }
+
+    public void buttonSkip(View view){
+        currPuzzle++;
+        boardView.setBoard(puzzles.get(currPuzzle), boardView.getWidth(), boardView.getHeight());
     }
 
     @Override
