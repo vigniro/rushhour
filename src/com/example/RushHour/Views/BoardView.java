@@ -1,4 +1,4 @@
-package com.example.RushHour;
+package com.example.RushHour.Views;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,11 +14,13 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.OvalShape;
 import android.graphics.drawable.shapes.RectShape;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import com.example.RushHour.GameObjects.Block;
+import com.example.RushHour.OnMoveEventHandler;
+import com.example.RushHour.GameObjects.Puzzle;
 
 import java.util.ArrayList;
 
@@ -42,8 +44,6 @@ public class BoardView extends View {
 
     ArrayList<MyShape> mShapes = new ArrayList<MyShape>();
     MyShape mMovingShape = null;
-
-
     ShapeDrawable m_shape = new ShapeDrawable( new RectShape() );
     Rect m_rect = new Rect();
 
@@ -51,19 +51,40 @@ public class BoardView extends View {
         super(context, attrs);
         m_paint.setColor( Color.WHITE );
         m_paint.setStyle( Paint.Style.STROKE );
-        mShapes.add(new MyShape(new Rect(0, 0, 100, 300), Color.RED, Orientation.VERTICAL));
-        mShapes.add( new MyShape( new Rect( 200, 300, 300, 350), Color.BLUE, Orientation.HORIZONTAL ) );
     }
 
-    public void setBoard( String string )
+    public void setBoard( Puzzle puzzle, int width, int height )
     {
-        for ( int idx=0, r= ROWS-1; r>=0; --r ) {
-            for ( int c=0; c < COLUMNS; ++c, ++idx ) {
-                m_board[c][r] = string.charAt( idx );
+        int cellWidth = width / COLUMNS;
+        int cellHeight = height / ROWS;
+        for(Block b: puzzle.blocks)
+        {
+            if(b.orientation.equalsIgnoreCase("H")){
+                mShapes.add(new MyShape(
+                        new Rect(
+                            b.left * cellWidth,
+                            b.top * cellHeight,
+                            b.size * cellWidth + cellWidth,
+                            b.top * cellHeight + cellHeight),
+                            Color.RED
+                        ));
+
+            }
+           else{
+                mShapes.add(new MyShape(
+                        new Rect(
+                                b.left * cellWidth,
+                                b.top * cellHeight,
+                                b.left * cellWidth + cellWidth,
+                                b.size * cellHeight + cellHeight),
+                                Color.BLUE
+                ));
+
             }
         }
-        invalidate();
+        //invalidate();
     }
+
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -80,41 +101,26 @@ public class BoardView extends View {
 
     public void onDraw( Canvas canvas )
     {
+        drawGrid(canvas);
         for ( MyShape shape : mShapes ) {
             mPaint.setColor( shape.color );
             canvas.drawRect( shape.rect, mPaint );
         }
+    }
 
+    private void drawGrid(Canvas canvas){
         for ( int r= ROWS -1; r>=0; --r ) {
             for ( int c=0; c< COLUMNS; ++c ) {
-                m_rect.set( c * m_cellWidth, r * m_cellHeight,
-                        c * m_cellWidth + m_cellWidth, r * m_cellHeight + m_cellHeight );
+                m_rect.set( c * m_cellWidth,
+                            r * m_cellHeight,
+                            c * m_cellWidth + m_cellWidth,
+                            r * m_cellHeight + m_cellHeight );
                 canvas.drawRect( m_rect, m_paint );
                 m_rect.inset( (int)(m_rect.width() * 0.1), (int)(m_rect.height() * 0.1) );
                 m_shape.setBounds( m_rect );
-                /*
-                switch ( m_board[c][r] ) {
-                    case 'x':
-                        m_shape.getPaint().setColor( Color.RED );
-                        m_shape.draw( canvas );
-                        break;
-                    case 'o':
-                        m_shape.getPaint().setColor( Color.BLUE );
-                        m_shape.draw( canvas );
-                        break;
-                    default:
-                        break;
-                }   */
+
             }
         }
-    }
-
-    private int xToCol( int x ) {
-        return x / m_cellWidth;
-    }
-
-    private int yToRow( int y ) {
-        return y / m_cellHeight;
     }
 
     @Override
@@ -122,8 +128,6 @@ public class BoardView extends View {
 
         int x = (int) event.getX();
         int y = (int) event.getY();
-        int originX = x;
-        int originY = y;
         switch ( event.getAction() ) {
             case MotionEvent.ACTION_DOWN:
                 mMovingShape = findShape( x, y );
@@ -136,14 +140,8 @@ public class BoardView extends View {
                 break;
             case MotionEvent.ACTION_MOVE:
                 if ( mMovingShape != null ) {
-                    mMovingShape.rect.
                     x = Math.min( x, getWidth() - mMovingShape.rect.width() );
-                    if(mMovingShape.orientation == Orientation.HORIZONTAL){
-                        mMovingShape.rect.offsetTo( originX, y );
-                    }
-                    else{
-                        mMovingShape.rect.offsetTo( x, originY );
-                    }
+                    mMovingShape.rect.offsetTo( x, y );
                     invalidate();
                 }
                 break;
@@ -172,19 +170,12 @@ public class BoardView extends View {
 
     private class MyShape {
 
-        MyShape( Rect r, int c, Orientation o ) {
+        MyShape( Rect r, int c) {
             rect = r;
             color = c;
-            orientation = o;
         }
         Rect rect;
         int  color;
-        Orientation orientation;
-    }
-
-    private enum Orientation {
-        HORIZONTAL,
-        VERTICAL
     }
 }
 

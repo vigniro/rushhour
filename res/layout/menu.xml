@@ -1,32 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
         >
     <Button
-            android:id="@+id/buttonReset"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Reset"
-            />
-    <Button
-            android:id="@+id/button"
+            android:id="@+id/buttonPlay"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Play"
             android:onClick="buttonPlay"
             />
-    <Spinner
-            android:id="@+id/spinner"
+    <Button
+        android:id="@+id/buttonPuzzles"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Puzzles"
+        android:onClick="buttonPuzzles"
+        />
+    <Button
+            android:id="@+id/buttonOptions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="Options"
+            android:onClick="buttonOptions"
             />
-    <com.example.RushHour.BoardView
-            android:id="@+id/boardview"
+    <Button
+            android:id="@+id/buttonAbout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="#aaaaff"
+            android:text="About"
+            android:onClick="buttonAbout"
             />
 </LinearLayout>
