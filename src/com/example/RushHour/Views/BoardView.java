@@ -32,6 +32,17 @@ public class BoardView extends View {
     private int COLUMNS = 6;
     private int ROWS = 6;
     private char[][] m_board = new char[COLUMNS][ROWS];
+
+    // private boolean[][] m_boolBoard = new boolean[COLUMNS][ROWS];
+    private boolean[][] m_boolBoard = {
+        {false,false,false,false,false,false},
+        {false,false,false,false,false,false},
+        {false,false,false,false,false,false},
+        {false,false,false,false,false,false},
+        {false,false,false,false,false,false},
+        {false,false,false,false,false,false},
+    };
+
     private Paint m_paint = new Paint();
     Paint mPaint = new Paint();
     private OnMoveEventHandler m_moveHandler = null;
@@ -52,8 +63,11 @@ public class BoardView extends View {
         blocks = new ArrayList<Block>();
         int cellWidth = width / COLUMNS;
         int cellHeight = height / ROWS;
+
         for(Block b: puzzle.blocks)
         {
+            initBoolBoard(b);
+            // System.out.println(b.left + ", " + b.top);
             if(b.orientation.equalsIgnoreCase("H")){
                 b.setRect(b.left * cellWidth, b.top * cellHeight, b.size * cellWidth + b.left * cellWidth,b.top * cellHeight + cellHeight);
                 b.setColor(Color.RED);
@@ -65,8 +79,39 @@ public class BoardView extends View {
                 blocks.add(b);
             }
         }
+        printBoolBoard(m_boolBoard);
         invalidate();
     }
+
+    public void initBoolBoard(Block b) {
+        // System.out.println("X: " + b.left + " , Y: " + b.top + " , Orientation: " + b.orientation + " , Size: " + b.size);
+        m_boolBoard[b.left][b.top] = true;
+        if (b.orientation.equalsIgnoreCase("V")) {
+            m_boolBoard[b.left][b.top+1] = true;
+            if (b.size == 3) {
+                m_boolBoard[b.left][b.top+2] = true;
+            }
+        }
+        else { // orientation of block is horizontal
+            m_boolBoard[b.left+1][b.top] = true;
+            if (b.size == 3) {
+                m_boolBoard[b.left+2][b.top] = true;
+            }
+        }
+    }
+
+    public void printBoolBoard(boolean[][] boolBoard) {
+
+        for(int i=0; i<COLUMNS; i++) {
+            String tmp = "";
+            for(int j=0; j<ROWS; j++) {
+                tmp += boolBoard[j][i] + ", ";
+            }
+            System.out.println(tmp);
+        }
+    }
+
+    //public void isMoveValid()
 
 
     @Override
@@ -82,6 +127,7 @@ public class BoardView extends View {
         m_cellHeight = yNew / ROWS;
     }
 
+    // @Override
     public void onDraw( Canvas canvas )
     {
         drawGrid(canvas);
@@ -111,6 +157,8 @@ public class BoardView extends View {
 
         int x = (int) event.getX();
         int y = (int) event.getY();
+        // System.out.println("x: " + x + " y: " + y);
+
         switch ( event.getAction() ) {
             case MotionEvent.ACTION_DOWN:
                 movingBlock = findBlock(x, y);
