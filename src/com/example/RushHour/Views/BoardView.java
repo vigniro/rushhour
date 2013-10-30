@@ -48,7 +48,9 @@ public class BoardView extends View {
     private OnMoveEventHandler m_moveHandler = null;
 
     ArrayList<Block> blocks;
-    Block movingBlock = null;
+    Block m_movingBlock = null;
+    int legalBackwards;
+    int legalForward;
     ShapeDrawable m_shape = new ShapeDrawable( new RectShape() );
     Rect m_rect = new Rect();
 
@@ -161,22 +163,24 @@ public class BoardView extends View {
 
         switch ( event.getAction() ) {
             case MotionEvent.ACTION_DOWN:
-                movingBlock = findBlock(x, y);
+                m_movingBlock = findBlock(x, y);
+                scanLegalMoves();
                 break;
             case MotionEvent.ACTION_UP:
-                if ( movingBlock != null ) {
-                    movingBlock = null;
+                if ( m_movingBlock != null ) {
+                    updateBoolBoard();
+                    m_movingBlock = null;
                     // emit an custom event ....
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
-                if ( movingBlock != null ) {
-                    x = Math.min( x, getWidth() - movingBlock.getRect().width() );
-                    if(movingBlock.orientation.equalsIgnoreCase("H")){
-                        //if(movingBlock.getRect().left >= 0 && movingBlock.getRect().width() <= getWidth())
-                            movingBlock.getRect().offsetTo( x, movingBlock.getRect().top );
+                if ( m_movingBlock != null ) {
+                    x = Math.min( x, getWidth() - m_movingBlock.getRect().width() );
+                    if(m_movingBlock.orientation.equalsIgnoreCase("H")){
+                        //if(m_movingBlock.getRect().left >= 0 && m_movingBlock.getRect().width() <= getWidth())
+                            m_movingBlock.getRect().offsetTo( x, m_movingBlock.getRect().top );
                     }else{
-                        movingBlock.getRect().offsetTo(movingBlock.getRect().left, y);
+                        m_movingBlock.getRect().offsetTo(m_movingBlock.getRect().left, y);
                         invalidate();
                     }
                     invalidate();
@@ -204,5 +208,90 @@ public class BoardView extends View {
         }
         return null;
     }
+
+    private void updateBoolBoard() {
+
+    }
+
+    private void scanLegalMoves() {
+        // Init
+        //legalBackwards=-1;
+        //legalForward=-1;
+
+        // Orientation of moving block is horizontal
+        if(m_movingBlock.orientation.equalsIgnoreCase("H")) {
+            boolean blockOnLeft=false, blockOnRight=false;
+
+            // Find the next block, if any, on the lefthand side of the moving block
+            for (int i=m_movingBlock.left-1; i>=0; i--) {
+                if (m_boolBoard[i][m_movingBlock.top]) {
+                    legalBackwards = i+1;
+                    blockOnLeft = true;
+                    break;
+                }
+            }
+
+            if (!blockOnLeft) {
+                legalBackwards = 0;
+            }
+
+            // Find the next block, if any, on the righthand side of the moving block
+            for (int i=m_movingBlock.left+m_movingBlock.size; i<COLUMNS; i++) {
+                if (m_boolBoard[i][m_movingBlock.top]) {
+                    legalForward = i-1;
+                    blockOnRight = true;
+                    break;
+                }
+            }
+
+            if (!blockOnRight) {
+                legalForward = COLUMNS-1;
+            }
+            System.out.println(legalBackwards + " " + legalForward);
+        }
+
+        // Orientation of moving block is vertical
+        else {
+            boolean blockAbove=false, blockBelow=false;
+
+            // Find the next block, if any, on the lefthand side of the moving block
+            for (int i=m_movingBlock.top-1; i>=0; i--) {
+                if (m_boolBoard[m_movingBlock.left][i]) {
+                    legalBackwards = i+1;
+                    blockAbove = true;
+                    break;
+                }
+            }
+
+            if (!blockAbove) {
+                legalBackwards = 0;
+            }
+
+            // Find the next block, if any, on the righthand side of the moving block
+            for (int i=m_movingBlock.top+m_movingBlock.size; i<ROWS; i++) {
+                if (m_boolBoard[m_movingBlock.left][i]) {
+                    legalForward = i-1;
+                    blockBelow = true;
+                    break;
+                }
+            }
+
+            if (!blockBelow) {
+                legalForward = ROWS-1;
+            }
+            System.out.println(legalBackwards + " " + legalForward);
+
+        }
+
+    }
+
+    private int xToCol( int x ) {
+        return x / m_cellWidth;
+    }
+
+    private int yToRow( int y ) {
+        return y / m_cellHeight;
+    }
+
 }
 
