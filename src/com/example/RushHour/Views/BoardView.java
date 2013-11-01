@@ -159,7 +159,7 @@ public class BoardView extends View {
 
         int x = (int) event.getX();
         int y = (int) event.getY();
-        // System.out.println("x: " + x + " y: " + y);
+        System.out.println("x: " + x + " y: " + y);
 
         switch ( event.getAction() ) {
             case MotionEvent.ACTION_DOWN:
