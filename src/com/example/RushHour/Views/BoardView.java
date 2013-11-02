@@ -11,9 +11,6 @@ package com.example.RushHour.Views;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.*;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.RectShape;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -45,39 +42,50 @@ public class BoardView extends View {
     };
 
     private Paint m_paint = new Paint();
-    Paint mPaint = new Paint();
     Paint blockPaint;
+    Paint goalPaint;
+    Paint playerPaint;
     private OnMoveEventHandler m_moveHandler = null;
-
     ArrayList<Block> blocks;
     Block goalBlock;
     Block m_movingBlock = null;
     int legalBackwards;
     int legalForward;
-    ShapeDrawable m_shape = new ShapeDrawable( new RectShape() );
     Rect m_rect = new Rect();
-    Bitmap bm;
     public BoardView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        m_paint.setColor(Color.WHITE);
+        m_paint.setColor(Color.rgb(244, 222, 163));
         m_paint.setStyle( Paint.Style.STROKE );
-
-
-          //doStuff();
+        configurePaint();
 
     }
-    /*
-    public void doStuff(){
+
+    public void configurePaint(){
 
         Resources res = getResources();
         BitmapShader shader;
-        this.bm = Bitmap.createBitmap(BitmapFactory.decodeResource(res, R.drawable.wild_flowers));
 
-        shader = new BitmapShader(bm, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+        Bitmap bm;
+        bm = Bitmap.createBitmap(BitmapFactory.decodeResource(res, R.drawable.brick1));
+        shader = new BitmapShader(bm, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
 
         blockPaint = new Paint();
         blockPaint.setAntiAlias(true);
         blockPaint.setShader(shader);
+
+        bm = Bitmap.createBitmap(BitmapFactory.decodeResource(res, R.drawable.playerbrick));
+        shader = new BitmapShader(bm, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+
+        playerPaint = new Paint();
+        playerPaint.setAntiAlias(true);
+        playerPaint.setShader(shader);
+
+        //bm = Bitmap.createBitmap(BitmapFactory.decodeResource(res, R.drawable.brick1));
+        //shader = new BitmapShader(bm, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+        goalPaint = new Paint();
+        //goalPaint.setAntiAlias(true);
+        //goalPaint.setShader(shader);
+        goalPaint.setColor(Color.DKGRAY);
 
         //RectF rect = new RectF(0.0f, 0.0f, width, height);
 
@@ -85,7 +93,7 @@ public class BoardView extends View {
         // radius is the radius in pixels of the rounded corners
         // paint contains the shader that will texture the shape
         //canvas.drawRoundRect(rect, radius, radius, blockPaint);
-    }   */
+    }
 
     public void setBoard( Puzzle puzzle, int width, int height )
     {
@@ -100,19 +108,16 @@ public class BoardView extends View {
             if(b.orientation.equalsIgnoreCase("H")){
                 b.setRect(b.left * cellWidth, b.top * cellHeight,
                         b.size * cellWidth + b.left * cellWidth,b.top * cellHeight + cellHeight);
-                b.setColor(b.type == BlockType.PLAYER ? Color.RED : Color.BLUE);
                 blocks.add(b);
             }
            else{
                 b.setRect(b.left * cellWidth, b.top * cellHeight, b.left * cellWidth + cellWidth,
                         b.size * cellHeight + b.top * cellHeight);
-                b.setColor(b.type == BlockType.PLAYER ? Color.RED : Color.BLUE);
                 blocks.add(b);
             }
         }
         //Add goal stripe to the block array
         this.goalBlock = new Block(BlockType.GOAL, 6 * m_cellWidth-10, 2 * m_cellHeight, 6 * m_cellWidth, 3 * m_cellHeight);
-        goalBlock.setColor(Color.RED);
         blocks.add(goalBlock);
 
         printBoolBoard(m_boolBoard);
@@ -166,11 +171,16 @@ public class BoardView extends View {
     // @Override
     public void onDraw( Canvas canvas )
     {
+        canvas.drawRect(0,0, getWidth(), getHeight(), m_paint);
 
         drawGrid(canvas);
         for ( Block b : blocks) {
-            mPaint.setColor( b.getColor() );
-            canvas.drawRect( b.getRect(), mPaint );
+            if(b.type == BlockType.NORMAL)
+                canvas.drawRect( b.getRect(), blockPaint );
+            else if(b.type == BlockType.PLAYER)
+                canvas.drawRect( b.getRect(), playerPaint );
+            else
+                canvas.drawRect( b.getRect(), goalPaint );
         }
     }
 
@@ -183,7 +193,6 @@ public class BoardView extends View {
                             c * m_cellWidth + m_cellWidth,
                             r * m_cellHeight + m_cellHeight );
                 canvas.drawRect( m_rect, m_paint );
-                m_rect.inset( (int)(m_rect.width() * 0.1), (int)(m_rect.height() * 0.1) );
 
             }
         }
