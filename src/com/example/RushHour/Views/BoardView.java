@@ -11,6 +11,7 @@ package com.example.RushHour.Views;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.*;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -29,6 +30,7 @@ public class BoardView extends View {
     private int m_cellHeight = 0;
     private int COLUMNS = 6;
     private int ROWS = 6;
+    private int radius = 25;
     private char[][] m_board = new char[COLUMNS][ROWS];
 
     // private boolean[][] m_boolBoard = new boolean[COLUMNS][ROWS];
@@ -40,7 +42,7 @@ public class BoardView extends View {
         {false,false,false,false,false,false},
         {false,false,false,false,false,false},
     };
-
+    Bitmap bmm;
     private Paint m_paint = new Paint();
     Paint blockPaint;
     Paint goalPaint;
@@ -66,11 +68,12 @@ public class BoardView extends View {
         BitmapShader shader;
 
         Bitmap bm;
-        bm = Bitmap.createBitmap(BitmapFactory.decodeResource(res, R.drawable.brick1));
-        shader = new BitmapShader(bm, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+        bmm = Bitmap.createBitmap(BitmapFactory.decodeResource(res, R.drawable.brick1));
+        shader = new BitmapShader(bmm, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
 
         blockPaint = new Paint();
         blockPaint.setAntiAlias(true);
+        blockPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         blockPaint.setShader(shader);
 
         bm = Bitmap.createBitmap(BitmapFactory.decodeResource(res, R.drawable.playerbrick));
@@ -78,6 +81,7 @@ public class BoardView extends View {
 
         playerPaint = new Paint();
         playerPaint.setAntiAlias(true);
+        blockPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         playerPaint.setShader(shader);
 
         //bm = Bitmap.createBitmap(BitmapFactory.decodeResource(res, R.drawable.brick1));
@@ -86,8 +90,9 @@ public class BoardView extends View {
         //goalPaint.setAntiAlias(true);
         //goalPaint.setShader(shader);
         goalPaint.setColor(Color.DKGRAY);
+        blockPaint.setStyle(Paint.Style.FILL_AND_STROKE);
 
-        //RectF rect = new RectF(0.0f, 0.0f, width, height);
+        //RectF rect = new RectF(0.0f, 0.0f,     width, height);
 
         // rect contains the bounds of the shape
         // radius is the radius in pixels of the rounded corners
@@ -171,14 +176,16 @@ public class BoardView extends View {
     // @Override
     public void onDraw( Canvas canvas )
     {
-        canvas.drawRect(0,0, getWidth(), getHeight(), m_paint);
-
         drawGrid(canvas);
         for ( Block b : blocks) {
+            RectF rectF = new RectF(b.getRect());
             if(b.type == BlockType.NORMAL)
-                canvas.drawRect( b.getRect(), blockPaint );
+                canvas.drawRoundRect(rectF, radius, radius, blockPaint);
+
+                //canvas.drawBitmap(bmm, null, rectF, blockPaint);
+
             else if(b.type == BlockType.PLAYER)
-                canvas.drawRect( b.getRect(), playerPaint );
+                canvas.drawRoundRect(rectF, radius, radius, playerPaint);
             else
                 canvas.drawRect( b.getRect(), goalPaint );
         }
