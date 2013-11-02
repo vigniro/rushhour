@@ -29,7 +29,7 @@ public class Puzzle implements Serializable{
             String blockConfig[] = s.trim().split(" ");
             blocks.add(
                     new Block(
-                        i == 0, //If this is the first iteration mark the block as the player block.
+                        i == 0 ? BlockType.PLAYER : BlockType.NORMAL, //If this is the first iteration mark the block as the player block.
                         blockConfig[0],
                         Integer.valueOf(blockConfig[1]),
                         Integer.valueOf(blockConfig[2]),

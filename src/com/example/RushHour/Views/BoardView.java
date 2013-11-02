@@ -19,6 +19,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import com.example.RushHour.GameObjects.Block;
+import com.example.RushHour.GameObjects.BlockType;
 import com.example.RushHour.OnMoveEventHandler;
 import com.example.RushHour.GameObjects.Puzzle;
 
@@ -73,16 +74,21 @@ public class BoardView extends View {
             if(b.orientation.equalsIgnoreCase("H")){
                 b.setRect(b.left * cellWidth, b.top * cellHeight,
                         b.size * cellWidth + b.left * cellWidth,b.top * cellHeight + cellHeight);
-                b.setColor(b.isPlayerBlock ? Color.RED : Color.BLUE);
+                b.setColor(b.type == BlockType.PLAYER ? Color.RED : Color.BLUE);
                 blocks.add(b);
             }
            else{
                 b.setRect(b.left * cellWidth, b.top * cellHeight, b.left * cellWidth + cellWidth,
                         b.size * cellHeight + b.top * cellHeight);
-                b.setColor(b.isPlayerBlock ? Color.RED : Color.BLUE);
+                b.setColor(b.type == BlockType.PLAYER ? Color.RED : Color.BLUE);
                 blocks.add(b);
             }
         }
+        //Add goal stripe to the block array
+        Block goal = new Block(BlockType.GOAL, 6 * m_cellWidth-10, 2 * m_cellHeight, 6 * m_cellWidth, 3 * m_cellHeight);
+        goal.setColor(Color.RED);
+        blocks.add(goal);
+
         printBoolBoard(m_boolBoard);
         invalidate();
     }
@@ -137,7 +143,6 @@ public class BoardView extends View {
         drawGrid(canvas);
         for ( Block b : blocks) {
             mPaint.setColor( b.getColor() );
-
             canvas.drawRect( b.getRect(), mPaint );
         }
     }
