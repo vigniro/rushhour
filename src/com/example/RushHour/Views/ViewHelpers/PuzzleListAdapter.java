@@ -1,4 +1,4 @@
-package com.example.RushHour;
+package com.example.RushHour.Views.ViewHelpers;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.example.RushHour.GameObjects.Puzzle;
+import com.example.RushHour.R;
 
 import java.util.List;
 
@@ -18,11 +19,11 @@ import java.util.List;
  * Time: 13:57
  * To change this template use File | Settings | File Templates.
  */
-public class CustomAdapter extends ArrayAdapter<Puzzle> {
+public class PuzzleListAdapter extends ArrayAdapter<Puzzle> {
     private final Context context;
     private final Puzzle[] puzzles;
 
-    public CustomAdapter(Context context, Puzzle[] puzzles) {
+    public PuzzleListAdapter(Context context, Puzzle[] puzzles) {
         super(context, R.layout.list_item, puzzles);
         this.context = context;
         this.puzzles = puzzles;

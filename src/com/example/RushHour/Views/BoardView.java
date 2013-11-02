@@ -71,13 +71,15 @@ public class BoardView extends View {
             initBoolBoard(b);
             // System.out.println(b.left + ", " + b.top);
             if(b.orientation.equalsIgnoreCase("H")){
-                b.setRect(b.left * cellWidth, b.top * cellHeight, b.size * cellWidth + b.left * cellWidth,b.top * cellHeight + cellHeight);
-                b.setColor(Color.RED);
+                b.setRect(b.left * cellWidth, b.top * cellHeight,
+                        b.size * cellWidth + b.left * cellWidth,b.top * cellHeight + cellHeight);
+                b.setColor(b.isPlayerBlock ? Color.RED : Color.BLUE);
                 blocks.add(b);
             }
            else{
-                b.setRect(b.left * cellWidth, b.top * cellHeight, b.left * cellWidth + cellWidth, b.size * cellHeight + b.top * cellHeight);
-                b.setColor(Color.BLUE);
+                b.setRect(b.left * cellWidth, b.top * cellHeight, b.left * cellWidth + cellWidth,
+                        b.size * cellHeight + b.top * cellHeight);
+                b.setColor(b.isPlayerBlock ? Color.RED : Color.BLUE);
                 blocks.add(b);
             }
         }

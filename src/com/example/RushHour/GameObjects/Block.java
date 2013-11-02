@@ -10,6 +10,7 @@ import android.graphics.Rect;
  * To change this template use File | Settings | File Templates.
  */
 public class Block {
+    public boolean isPlayerBlock;
     public int left;
     public int top;
     public int size;
@@ -17,7 +18,8 @@ public class Block {
     private int color;
     private Rect rect;
 
-    public Block(String orientation, int left, int top, int size){
+    public Block(boolean isPlayerBlock, String orientation, int left, int top, int size){
+        this.isPlayerBlock = isPlayerBlock;
         this.orientation = orientation;
         this.left = left;
         this.top = top;

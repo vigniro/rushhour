@@ -1,4 +1,4 @@
-package com.example.RushHour;
+package com.example.RushHour.DAO;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

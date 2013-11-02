@@ -1,4 +1,4 @@
-package com.example.RushHour;
+package com.example.RushHour.DAO;
 
 /*
      Created by vidirr on 11/1/13.

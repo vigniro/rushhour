@@ -19,21 +19,24 @@ public class Puzzle implements Serializable{
         this.id = id;
         this.level = level;
         blocks = new ArrayList<Block>();
-        parseSetup(setup);
+        parseBlockSetup(setup);
     }
 
-    private void parseSetup(String setup){
+    private void parseBlockSetup(String setup){
         String set[] = setup.split(",");
-        for(String s: set){
-            s = s.replace("(", "");
-            s= s.replace(")", "");
+        for(int i = 0; i < set.length; i++){
+            String s = set[i].replace("(", "").replace(")", "");
             String blockConfig[] = s.trim().split(" ");
-            blocks.add(new Block(blockConfig[0],
-                    Integer.valueOf(blockConfig[1]),
-                    Integer.valueOf(blockConfig[2]),
-                    Integer.valueOf(blockConfig[3])));
+            blocks.add(
+                    new Block(
+                        i == 0, //If this is the first iteration mark the block as the player block.
+                        blockConfig[0],
+                        Integer.valueOf(blockConfig[1]),
+                        Integer.valueOf(blockConfig[2]),
+                        Integer.valueOf(blockConfig[3])
+                    )
+            );
         }
-
     }
 
     public int getId() {
