@@ -48,6 +48,14 @@ public class Block {
           }
     }
 
+    public void updateRect(Rect rect)
+    {
+        this.rect.left = rect.left;
+        this.rect.top = rect.top;
+        this.rect.right = rect.right;
+        this.rect.bottom = rect.bottom;
+    }
+
     public Rect getRect()
     {
         return this.rect;

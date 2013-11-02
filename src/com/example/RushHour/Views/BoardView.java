@@ -59,6 +59,7 @@ public class BoardView extends View {
     int deltaX, deltaY;
     int dx, dy;
     int distX, distY;
+    int currBlockIndex;
     Rect m_rect = new Rect();
     public BoardView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -241,7 +242,7 @@ public class BoardView extends View {
                 break;
             case MotionEvent.ACTION_UP:
                 if ( m_movingBlock != null ) {
-                    updateMovedBlock();
+                    updateMovedBlock(m_movingBlock);
                     updateBoolBoard();
                     m_movingBlock = null;
                     // emit an custom event ....
@@ -272,6 +273,7 @@ public class BoardView extends View {
                         else {
                             m_movingBlock.getRect().offsetTo( (legalForward+1)*m_cellWidth-m_movingBlock.getRect().width(), m_movingBlock.getRect().top );
                         }
+                        updateMovedBlock(m_movingBlock);
                     }else{
                         dy = y-deltaY;
 
@@ -285,6 +287,7 @@ public class BoardView extends View {
                         else {
                             m_movingBlock.getRect().offsetTo(m_movingBlock.getRect().left, (legalForward+1)*m_cellHeight-m_movingBlock.getRect().height());
                         }
+                        updateMovedBlock(m_movingBlock);
                     }
                     invalidate();
                     break;
@@ -306,15 +309,17 @@ public class BoardView extends View {
     private Block findBlock(int x, int y) {
         for ( Block b : blocks) {
             if ( b.getRect().contains( x, y ) ) {
+                currBlockIndex = blocks.indexOf(b);
                 return b;
+
             }
         }
         return null;
     }
 
 
-    private void updateMovedBlock() {
-
+    private void updateMovedBlock(Block movedBlock) {
+         blocks.get(currBlockIndex).updateRect(movedBlock.getRect());
     }
 
     private void updateBoolBoard() {
