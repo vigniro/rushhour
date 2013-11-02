@@ -87,6 +87,7 @@ public class BoardView extends View {
         drawGrid(canvas);
         for ( Block b : blocks) {
             mPaint.setColor( b.getColor() );
+
             canvas.drawRect( b.getRect(), mPaint );
         }
     }

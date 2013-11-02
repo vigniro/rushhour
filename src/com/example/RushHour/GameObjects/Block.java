@@ -36,6 +36,7 @@ public class Block {
     public void setRect(int left, int top, int right, int bottom)
     {
           this.rect = new Rect(left, top, right, bottom );
+          this.rect.inset(10,10);
     }
 
     public Rect getRect()

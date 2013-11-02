@@ -58,7 +58,8 @@ public class GameActivity extends Activity {
     }
 
     public void buttonSkip(View view){
-        currPuzzle++;
+        if(currPuzzle < puzzles.size())
+            currPuzzle++;
         boardView.setBoard(puzzles.get(currPuzzle), boardView.getWidth(), boardView.getHeight());
     }
 

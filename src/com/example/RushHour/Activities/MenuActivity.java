@@ -37,7 +37,7 @@ public class MenuActivity extends Activity {
         startActivity(intent);
     }
 
-    public void buttonOptions( View view ) {
+    public void buttonOptions( View view )  {
         Intent intent = new Intent( this, OptionsActivity.class );
         startActivity( intent );
     }
