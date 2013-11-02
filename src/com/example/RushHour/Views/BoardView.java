@@ -9,10 +9,9 @@ package com.example.RushHour.Views;
  */
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
+import android.content.res.Resources;
+import android.graphics.*;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
 import android.util.AttributeSet;
@@ -22,6 +21,7 @@ import com.example.RushHour.GameObjects.Block;
 import com.example.RushHour.GameObjects.BlockType;
 import com.example.RushHour.OnMoveEventHandler;
 import com.example.RushHour.GameObjects.Puzzle;
+import com.example.RushHour.R;
 
 import java.util.ArrayList;
 
@@ -46,20 +46,46 @@ public class BoardView extends View {
 
     private Paint m_paint = new Paint();
     Paint mPaint = new Paint();
+    Paint blockPaint;
     private OnMoveEventHandler m_moveHandler = null;
 
     ArrayList<Block> blocks;
+    Block goalBlock;
     Block m_movingBlock = null;
     int legalBackwards;
     int legalForward;
     ShapeDrawable m_shape = new ShapeDrawable( new RectShape() );
     Rect m_rect = new Rect();
-
+    Bitmap bm;
     public BoardView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        m_paint.setColor( Color.WHITE );
+        m_paint.setColor(Color.WHITE);
         m_paint.setStyle( Paint.Style.STROKE );
+
+
+          //doStuff();
+
     }
+    /*
+    public void doStuff(){
+
+        Resources res = getResources();
+        BitmapShader shader;
+        this.bm = Bitmap.createBitmap(BitmapFactory.decodeResource(res, R.drawable.wild_flowers));
+
+        shader = new BitmapShader(bm, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+
+        blockPaint = new Paint();
+        blockPaint.setAntiAlias(true);
+        blockPaint.setShader(shader);
+
+        //RectF rect = new RectF(0.0f, 0.0f, width, height);
+
+        // rect contains the bounds of the shape
+        // radius is the radius in pixels of the rounded corners
+        // paint contains the shader that will texture the shape
+        //canvas.drawRoundRect(rect, radius, radius, blockPaint);
+    }   */
 
     public void setBoard( Puzzle puzzle, int width, int height )
     {
@@ -85,9 +111,9 @@ public class BoardView extends View {
             }
         }
         //Add goal stripe to the block array
-        Block goal = new Block(BlockType.GOAL, 6 * m_cellWidth-10, 2 * m_cellHeight, 6 * m_cellWidth, 3 * m_cellHeight);
-        goal.setColor(Color.RED);
-        blocks.add(goal);
+        this.goalBlock = new Block(BlockType.GOAL, 6 * m_cellWidth-10, 2 * m_cellHeight, 6 * m_cellWidth, 3 * m_cellHeight);
+        goalBlock.setColor(Color.RED);
+        blocks.add(goalBlock);
 
         printBoolBoard(m_boolBoard);
         invalidate();
@@ -140,6 +166,7 @@ public class BoardView extends View {
     // @Override
     public void onDraw( Canvas canvas )
     {
+
         drawGrid(canvas);
         for ( Block b : blocks) {
             mPaint.setColor( b.getColor() );
@@ -148,6 +175,7 @@ public class BoardView extends View {
     }
 
     private void drawGrid(Canvas canvas){
+
         for ( int r= ROWS -1; r>=0; --r ) {
             for ( int c=0; c< COLUMNS; ++c ) {
                 m_rect.set( c * m_cellWidth,
@@ -156,7 +184,6 @@ public class BoardView extends View {
                             r * m_cellHeight + m_cellHeight );
                 canvas.drawRect( m_rect, m_paint );
                 m_rect.inset( (int)(m_rect.width() * 0.1), (int)(m_rect.height() * 0.1) );
-                m_shape.setBounds( m_rect );
 
             }
         }
@@ -185,8 +212,10 @@ public class BoardView extends View {
                 if ( m_movingBlock != null ) {
                     x = Math.min( x, getWidth() - m_movingBlock.getRect().width() );
                     if(m_movingBlock.orientation.equalsIgnoreCase("H")){
-                        //if(m_movingBlock.getRect().left >= 0 && m_movingBlock.getRect().width() <= getWidth())
-                            m_movingBlock.getRect().offsetTo( x, m_movingBlock.getRect().top );
+                        m_movingBlock.getRect().offsetTo( x, m_movingBlock.getRect().top );
+
+                        //Here we would check if the player block has moved past the goal block. If that happens
+                        //the puzzle has been solved and we initiate a callback to the gameactivity
                     }else{
                         m_movingBlock.getRect().offsetTo(m_movingBlock.getRect().left, y);
                         invalidate();
