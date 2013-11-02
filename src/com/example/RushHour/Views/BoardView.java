@@ -53,6 +53,7 @@ public class BoardView extends View {
     int legalForward;
     int deltaX, deltaY;
     int dx, dy;
+    int distX, distY;
     Rect m_rect = new Rect();
     public BoardView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -222,7 +223,7 @@ public class BoardView extends View {
                 break;
             case MotionEvent.ACTION_UP:
                 if ( m_movingBlock != null ) {
-                    //setNewGridPos(m_movingBlock);
+                    updateMovedBlock();
                     updateBoolBoard();
                     m_movingBlock = null;
                     // emit an custom event ....
@@ -233,6 +234,7 @@ public class BoardView extends View {
 
                     if(m_movingBlock.orientation.equalsIgnoreCase("H")){
                         dx = x-deltaX;
+
                         //System.out.println(m_movingBlock.left + " " + m_cellWidth + " " + m_movingBlock.getRect().width() + " x: " + x);
                         if (puzzleWon(dx))
                         {
@@ -241,7 +243,9 @@ public class BoardView extends View {
 
 
                         if (legalBackwards*m_cellWidth <= dx && dx+m_movingBlock.getRect().width() <= (legalForward+1)*m_cellWidth) {
-                            System.out.println("hurray!");
+                            //System.out.println("hurray!");
+                            distX = Math.abs(dx - m_movingBlock.left*m_cellWidth);
+                            System.out.println("distX: " + distX);
                             m_movingBlock.getRect().offsetTo( dx, m_movingBlock.getRect().top );
                         }
                         else if (legalBackwards*m_cellWidth > dx) {
@@ -250,12 +254,8 @@ public class BoardView extends View {
                         else {
                             m_movingBlock.getRect().offsetTo( (legalForward+1)*m_cellWidth-m_movingBlock.getRect().width(), m_movingBlock.getRect().top );
                         }
-
-                        //Here we would check if the player block has moved past the goal block. If that happens
-                        //the puzzle has been solved and we initiate a callback to the gameactivity
                     }else{
                         dy = y-deltaY;
-                        //System.out.println(m_movingBlock.left + " " + m_cellWidth + " " + m_movingBlock.getRect().width() + " x: " + x);
 
                         if (legalBackwards*m_cellHeight <= dy && dy+m_movingBlock.getRect().height() <= (legalForward+1)*m_cellHeight) {
                             System.out.println("hurray!");
@@ -267,10 +267,6 @@ public class BoardView extends View {
                         else {
                             m_movingBlock.getRect().offsetTo(m_movingBlock.getRect().left, (legalForward+1)*m_cellHeight-m_movingBlock.getRect().height());
                         }
-
-
-                        //m_movingBlock.getRect().offsetTo(m_movingBlock.getRect().left, y);
-                        //invalidate();
                     }
                     invalidate();
                     break;
@@ -296,6 +292,11 @@ public class BoardView extends View {
             }
         }
         return null;
+    }
+
+
+    private void updateMovedBlock() {
+
     }
 
     private void updateBoolBoard() {
