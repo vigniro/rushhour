@@ -124,6 +124,8 @@ public class BoardView extends View {
         //Add goal stripe to the block array
         this.goalBlock = new Block(BlockType.GOAL, 6 * m_cellWidth-10, 2 * m_cellHeight, 6 * m_cellWidth, 3 * m_cellHeight);
         blocks.add(goalBlock);
+        // System.out.println(goalBlock.left);
+        // System.out.println(6 * m_cellWidth-10);
 
         printBoolBoard(m_boolBoard);
         invalidate();
@@ -228,6 +230,11 @@ public class BoardView extends View {
                 if ( m_movingBlock != null ) {
                     x = Math.min( x, getWidth() - m_movingBlock.getRect().width() );
                     if(m_movingBlock.orientation.equalsIgnoreCase("H")){
+                        //System.out.println(m_movingBlock.left + " " + m_cellWidth + " " + m_movingBlock.getRect().width() + " x: " + x);
+                        if (puzzleWon(x))
+                        {
+                            System.out.println("You won!");
+                        }
                         m_movingBlock.getRect().offsetTo( x, m_movingBlock.getRect().top );
 
                         //Here we would check if the player block has moved past the goal block. If that happens
@@ -264,6 +271,13 @@ public class BoardView extends View {
 
     private void updateBoolBoard() {
 
+    }
+
+    private boolean puzzleWon (int x) {
+        if (x+m_movingBlock.getRect().width() > 470) {
+            return true;
+        }
+        return false;
     }
 
     private void scanLegalMoves() {
