@@ -12,6 +12,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.*;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RectShape;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -42,13 +44,14 @@ public class BoardView extends View {
         {false,false,false,false,false,false},
         {false,false,false,false,false,false},
     };
-    Bitmap bmm;
+
     private Paint m_paint = new Paint();
     Paint blockPaint;
     Paint goalPaint;
     Paint playerPaint;
     private OnMoveEventHandler m_moveHandler = null;
     ArrayList<Block> blocks;
+    Bitmap bmm;
     Block goalBlock;
     Block m_movingBlock = null;
     int legalBackwards;
@@ -57,7 +60,7 @@ public class BoardView extends View {
     public BoardView(Context context, AttributeSet attrs) {
         super(context, attrs);
         m_paint.setColor(Color.rgb(244, 222, 163));
-        m_paint.setStyle( Paint.Style.STROKE );
+        m_paint.setStyle( Paint.Style.FILL );
         configurePaint();
 
     }
@@ -66,22 +69,24 @@ public class BoardView extends View {
 
         Resources res = getResources();
         BitmapShader shader;
-
         Bitmap bm;
-        bmm = Bitmap.createBitmap(BitmapFactory.decodeResource(res, R.drawable.brick1));
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inScaled = true;
+
+        bmm = Bitmap.createBitmap(BitmapFactory.decodeResource(res, R.drawable.brick3256, options));
         shader = new BitmapShader(bmm, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
 
         blockPaint = new Paint();
         blockPaint.setAntiAlias(true);
-        blockPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        blockPaint.setStyle(Paint.Style.FILL);
         blockPaint.setShader(shader);
 
-        bm = Bitmap.createBitmap(BitmapFactory.decodeResource(res, R.drawable.playerbrick));
+        bm = Bitmap.createBitmap(BitmapFactory.decodeResource(res, R.drawable.playerbrick, options));
         shader = new BitmapShader(bm, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
 
         playerPaint = new Paint();
         playerPaint.setAntiAlias(true);
-        blockPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        blockPaint.setStyle(Paint.Style.FILL);
         playerPaint.setShader(shader);
 
         //bm = Bitmap.createBitmap(BitmapFactory.decodeResource(res, R.drawable.brick1));
@@ -90,7 +95,7 @@ public class BoardView extends View {
         //goalPaint.setAntiAlias(true);
         //goalPaint.setShader(shader);
         goalPaint.setColor(Color.DKGRAY);
-        blockPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        blockPaint.setStyle(Paint.Style.FILL);
 
         //RectF rect = new RectF(0.0f, 0.0f,     width, height);
 
@@ -98,6 +103,13 @@ public class BoardView extends View {
         // radius is the radius in pixels of the rounded corners
         // paint contains the shader that will texture the shape
         //canvas.drawRoundRect(rect, radius, radius, blockPaint);
+    }
+
+    public static Bitmap rotateBitmap(Bitmap source, float angle)
+    {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
     }
 
     public void setBoard( Puzzle puzzle, int width, int height )
@@ -183,9 +195,7 @@ public class BoardView extends View {
             RectF rectF = new RectF(b.getRect());
             if(b.type == BlockType.NORMAL)
                 canvas.drawRoundRect(rectF, radius, radius, blockPaint);
-
-                //canvas.drawBitmap(bmm, null, rectF, blockPaint);
-
+                //canvas.drawBitmap(bmm, null, rectF, null);
             else if(b.type == BlockType.PLAYER)
                 canvas.drawRoundRect(rectF, radius, radius, playerPaint);
             else
@@ -201,6 +211,7 @@ public class BoardView extends View {
                             r * m_cellHeight,
                             c * m_cellWidth + m_cellWidth,
                             r * m_cellHeight + m_cellHeight );
+                m_rect.inset(1,1);
                 canvas.drawRect( m_rect, m_paint );
 
             }
