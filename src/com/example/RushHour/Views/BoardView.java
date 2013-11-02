@@ -51,6 +51,7 @@ public class BoardView extends View {
     Block m_movingBlock = null;
     int legalBackwards;
     int legalForward;
+    int delta;
     Rect m_rect = new Rect();
     public BoardView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -211,6 +212,12 @@ public class BoardView extends View {
             case MotionEvent.ACTION_DOWN:
                 m_movingBlock = findBlock(x, y);
                 scanLegalMoves();
+                if(m_movingBlock.orientation.equalsIgnoreCase("H")){
+                    delta = x-m_movingBlock.left*m_cellWidth;
+                }
+                else {
+                    delta = 0;
+                }
                 break;
             case MotionEvent.ACTION_UP:
                 if ( m_movingBlock != null ) {
@@ -221,14 +228,28 @@ public class BoardView extends View {
                 break;
             case MotionEvent.ACTION_MOVE:
                 if ( m_movingBlock != null ) {
-                    x = Math.min( x, getWidth() - m_movingBlock.getRect().width() );
+
+                    x = Math.min( x-delta, getWidth() - m_movingBlock.getRect().width() );
+
+
+
+
                     if(m_movingBlock.orientation.equalsIgnoreCase("H")){
                         //System.out.println(m_movingBlock.left + " " + m_cellWidth + " " + m_movingBlock.getRect().width() + " x: " + x);
                         if (puzzleWon(x))
                         {
                             System.out.println("You won!");
                         }
+
+
+                        if (legalBackwards*m_cellWidth <= x && x+m_movingBlock.getRect().width() <= (legalForward+1)*m_cellWidth) {
+                            System.out.println("hurray!");
+
+                        }
                         m_movingBlock.getRect().offsetTo( x, m_movingBlock.getRect().top );
+
+
+                        // m_movingBlock.getRect().offsetTo( x, m_movingBlock.getRect().top );
 
                         //Here we would check if the player block has moved past the goal block. If that happens
                         //the puzzle has been solved and we initiate a callback to the gameactivity
