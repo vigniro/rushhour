@@ -51,7 +51,8 @@ public class BoardView extends View {
     Block m_movingBlock = null;
     int legalBackwards;
     int legalForward;
-    int delta;
+    int deltaX, deltaY;
+    int dx, dy;
     Rect m_rect = new Rect();
     public BoardView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -213,14 +214,15 @@ public class BoardView extends View {
                 m_movingBlock = findBlock(x, y);
                 scanLegalMoves();
                 if(m_movingBlock.orientation.equalsIgnoreCase("H")){
-                    delta = x-m_movingBlock.left*m_cellWidth;
+                    deltaX = x-m_movingBlock.left*m_cellWidth;
                 }
                 else {
-                    delta = 0;
+                    deltaY = y-m_movingBlock.top*m_cellHeight;
                 }
                 break;
             case MotionEvent.ACTION_UP:
                 if ( m_movingBlock != null ) {
+                    //setNewGridPos(m_movingBlock);
                     updateBoolBoard();
                     m_movingBlock = null;
                     // emit an custom event ....
@@ -229,33 +231,46 @@ public class BoardView extends View {
             case MotionEvent.ACTION_MOVE:
                 if ( m_movingBlock != null ) {
 
-                    x = Math.min( x-delta, getWidth() - m_movingBlock.getRect().width() );
-
-
-
-
                     if(m_movingBlock.orientation.equalsIgnoreCase("H")){
+                        dx = x-deltaX;
                         //System.out.println(m_movingBlock.left + " " + m_cellWidth + " " + m_movingBlock.getRect().width() + " x: " + x);
-                        if (puzzleWon(x))
+                        if (puzzleWon(dx))
                         {
                             System.out.println("You won!");
                         }
 
 
-                        if (legalBackwards*m_cellWidth <= x && x+m_movingBlock.getRect().width() <= (legalForward+1)*m_cellWidth) {
+                        if (legalBackwards*m_cellWidth <= dx && dx+m_movingBlock.getRect().width() <= (legalForward+1)*m_cellWidth) {
                             System.out.println("hurray!");
-
+                            m_movingBlock.getRect().offsetTo( dx, m_movingBlock.getRect().top );
                         }
-                        m_movingBlock.getRect().offsetTo( x, m_movingBlock.getRect().top );
-
-
-                        // m_movingBlock.getRect().offsetTo( x, m_movingBlock.getRect().top );
+                        else if (legalBackwards*m_cellWidth > dx) {
+                            m_movingBlock.getRect().offsetTo( legalBackwards*m_cellWidth, m_movingBlock.getRect().top );
+                        }
+                        else {
+                            m_movingBlock.getRect().offsetTo( (legalForward+1)*m_cellWidth-m_movingBlock.getRect().width(), m_movingBlock.getRect().top );
+                        }
 
                         //Here we would check if the player block has moved past the goal block. If that happens
                         //the puzzle has been solved and we initiate a callback to the gameactivity
                     }else{
-                        m_movingBlock.getRect().offsetTo(m_movingBlock.getRect().left, y);
-                        invalidate();
+                        dy = y-deltaY;
+                        //System.out.println(m_movingBlock.left + " " + m_cellWidth + " " + m_movingBlock.getRect().width() + " x: " + x);
+
+                        if (legalBackwards*m_cellHeight <= dy && dy+m_movingBlock.getRect().height() <= (legalForward+1)*m_cellHeight) {
+                            System.out.println("hurray!");
+                            m_movingBlock.getRect().offsetTo( m_movingBlock.getRect().left, dy );
+                        }
+                        else if (legalBackwards*m_cellHeight > dy) {
+                            m_movingBlock.getRect().offsetTo(m_movingBlock.getRect().left, legalBackwards*m_cellHeight);
+                        }
+                        else {
+                            m_movingBlock.getRect().offsetTo(m_movingBlock.getRect().left, (legalForward+1)*m_cellHeight-m_movingBlock.getRect().height());
+                        }
+
+
+                        //m_movingBlock.getRect().offsetTo(m_movingBlock.getRect().left, y);
+                        //invalidate();
                     }
                     invalidate();
                     break;
