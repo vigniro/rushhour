@@ -85,8 +85,8 @@ public class RushHourDataSource {
     /*
             Returns an ArrayList of intgers that contain the ID's of the levels that the player has finished.
      */
-    public List<int> getFinishedLevels() {
-        List<int> levels = new ArrayList<int>();
+    public List<Integer> getFinishedLevels() {
+        List<Integer> levels = new ArrayList<Integer>();
 
         Cursor cursor = database.query(DbHelper.TABLE_LEVELS_FINISHED,
                 LevelsFinishedColumns, null, null, null, null, null);
