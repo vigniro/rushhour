@@ -132,7 +132,7 @@ public class RushHourAdapter {
         return levels;
     }
 
-    public void dropFinishedLevelsTable() {
+    public void reinitDatabase() {
         openToWrite();
         dbHelper.reinitDatabase(db);
         close();
