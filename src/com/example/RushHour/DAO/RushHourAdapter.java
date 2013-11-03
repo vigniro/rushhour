@@ -5,6 +5,7 @@ package com.example.RushHour.DAO;
  */
 
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,8 +41,6 @@ public class RushHourAdapter {
 
     public RushHourAdapter(Context c) {
         context = c;
-        //if(checkDataBase())
-         //   reinitDatabase();
     }
 
     public RushHourAdapter openToRead() {
@@ -56,9 +55,9 @@ public class RushHourAdapter {
         return this;
     }
 
-    private boolean checkDataBase() {
+    public boolean checkDataBase() {
         SQLiteDatabase checkDB = null;
-        String dbpath = "RushHour.db";
+        String dbpath = "/data/data/com.example.RushHour/databases/RushHour.db";
         try {
             checkDB = SQLiteDatabase.openDatabase(dbpath, null,
                     SQLiteDatabase.OPEN_READONLY);

@@ -5,6 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.io.File;
+
 
 /**
  * Created by vidirr on 11/1/13.
@@ -22,7 +24,7 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String[] TableLevelsFinishedCols = {COLUMN_ID};
     public static final String[] TableCurrentLevelCols = {COLUMN_ID, COLUMN_CURRENT_LEVEL_ID};
 
-    private static final String DATABASE_NAME = "RushHour.db";
+    public static final String DATABASE_NAME = "RushHour.db";
     private static final int DATABASE_VERSION = 1;
 
     // Database creation sql statement
@@ -62,4 +64,7 @@ public class DbHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    public String getName(){
+        return DATABASE_NAME;
+    }
 }
