@@ -13,6 +13,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 
 
 /*
@@ -39,6 +40,8 @@ public class RushHourAdapter {
 
     public RushHourAdapter(Context c) {
         context = c;
+        //if(checkDataBase())
+         //   reinitDatabase();
     }
 
     public RushHourAdapter openToRead() {
@@ -51,6 +54,19 @@ public class RushHourAdapter {
         dbHelper = new DbHelper( context  );
         db = dbHelper.getWritableDatabase();
         return this;
+    }
+
+    private boolean checkDataBase() {
+        SQLiteDatabase checkDB = null;
+        String dbpath = "RushHour.db";
+        try {
+            checkDB = SQLiteDatabase.openDatabase(dbpath, null,
+                    SQLiteDatabase.OPEN_READONLY);
+            checkDB.close();
+        } catch (SQLiteException e) {
+            // database doesn't exist yet.
+        }
+        return checkDB != null ? true : false;
     }
 
     public void close() {
@@ -111,7 +127,7 @@ public class RushHourAdapter {
         int currentLevel = -1;
         cursor.moveToFirst();
         while(!cursor.isAfterLast()) {
-            currentLevel = (int)cursor.getLong(0);
+            currentLevel = (int)cursor.getLong(1);
             cursor.moveToNext();
         }
         cursor.close();
@@ -129,7 +145,7 @@ public class RushHourAdapter {
         contentValues.put(cols[0], 1);
         contentValues.put(cols[1], levelID);
 
-        db.execSQL("DELETE FROM TABLE " + dbHelper.TABLE_CURRENT_LEVEL + " WHERE _id=1");
+        db.execSQL("DELETE FROM " + dbHelper.TABLE_CURRENT_LEVEL + " WHERE _id=1");
         db.insert(DbHelper.TABLE_CURRENT_LEVEL, null, contentValues);
         close();
     }

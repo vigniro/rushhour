@@ -38,8 +38,8 @@ public class GameActivity extends Activity {
 
         setContentView(R.layout.game);
         db = new RushHourAdapter(this);
+        //db.reinitDatabase();
 
-        //currPuzzle = 0;
         //DEBUG THIS BITCH!!!!!!!!!!!!!!!!!!!!
         currPuzzle = db.getCurrentLevel();
         System.out.println("CURRPuZZ IN GAME BLA : " + currPuzzle);
@@ -80,6 +80,7 @@ public class GameActivity extends Activity {
     private void puzzleSolved(){
         try{
             db.markLevelAsFinished(currPuzzle);
+
         }catch(Exception e)
         {
             System.out.println(e.getMessage());
@@ -123,6 +124,7 @@ public class GameActivity extends Activity {
     private void nextPuzzle(){
         if(currPuzzle < puzzles.size())
             currPuzzle++;
+        db.setCurrentLevel(currPuzzle);
         boardView.setBoard(puzzles.get(currPuzzle), boardView.getWidth(), boardView.getHeight());
     }
 
