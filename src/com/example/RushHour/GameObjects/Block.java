@@ -48,12 +48,33 @@ public class Block {
           }
     }
 
-    public void updateRect(Rect rect)
+    public void updateHorizontalRect(int cellsMoved, boolean leftMove, int cellWidth)
     {
-        this.rect.left = rect.left;
-        this.rect.top = rect.top;
-        this.rect.right = rect.right;
-        this.rect.bottom = rect.bottom;
+        if (0 < this.left && this.left < 6) {
+            if(leftMove){
+                this.left -= cellsMoved;
+            }
+            else {
+                this.left += cellsMoved;
+            }
+            this.rect.left = this.left*cellWidth;
+            this.rect.right = this.rect.left+this.size*cellWidth;
+        }
+    }
+
+    public void updateVerticalRect(int cellsMoved, boolean upMove, int cellHeight)
+    {
+        if (0 < this.top && this.top < 6) {
+            if(upMove && this.top > 0){
+                this.top -= cellsMoved;
+            }
+            else if (!upMove && this.top < 6) {
+                this.top += cellsMoved;
+            }
+
+            this.rect.top = this.top*cellHeight;
+            this.rect.bottom = this.rect.top+this.size*cellHeight;
+        }
     }
 
     public Rect getRect()
