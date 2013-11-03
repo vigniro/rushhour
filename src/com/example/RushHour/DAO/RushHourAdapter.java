@@ -23,7 +23,7 @@ import android.database.sqlite.SQLiteDatabase;
  */
 
 
-public class RushHourDataSource {
+public class RushHourAdapter {
     // Database fields
     private SQLiteDatabase database;
     private DbHelper dbHelper;
@@ -36,7 +36,7 @@ public class RushHourDataSource {
     private String[] LevelsFinishedColumns = {DbHelper.COLUMN_ID};
     private String[] CurrentPositionColumns = {DbHelper.COLUMN_CURRENT_LEVEL, DbHelper.COLUMN_POSITON};
 
-    public RushHourDataSource(Context context) {
+    public RushHourAdapter(Context context) {
         dbHelper = new DbHelper(context);
     }
 

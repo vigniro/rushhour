@@ -4,7 +4,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import com.example.RushHour.DAO.RushHourDataSource;
+
+import com.example.RushHour.DAO.RushHourAdapter;
 import com.example.RushHour.GameObjects.Puzzle;
 import com.example.RushHour.R;
 import com.example.RushHour.RushHour;
@@ -27,12 +28,12 @@ public class GameActivity extends Activity {
     RushHour rushHour;
     ArrayList<Puzzle> puzzles;
     private int currPuzzle;
-    RushHourDataSource db;
+    RushHourAdapter db;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game);
-        db = new RushHourDataSource(this);
+        db = new RushHourAdapter(this);
          /*
         rushHour = new RushHour();
         if ( savedInstanceState != null ) {
