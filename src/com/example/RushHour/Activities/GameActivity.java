@@ -36,25 +36,23 @@ public class GameActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //LinearLayout contentPane = (LinearLayout)findViewById(R.id.gameParent);
-
         setContentView(R.layout.game);
-
-
-
-
-        db = new RushHourAdapter(this);
-         /*
-        rushHour = new RushHour();
-        if ( savedInstanceState != null ) {
-            String state = savedInstanceState.getString( "stateRushHour" );
-            rushHour.set( state );
-        }
-            */
-
-        //List<Integer> finishedLevels = getFinishedLevels();
+        //db = new RushHourAdapter(this);
 
         currPuzzle = 0;
+        if(this.getIntent().hasExtra("currPuzzle"))
+        {
+            Bundle parameters = this.getIntent().getExtras();
+            Integer puzzleListChoice = parameters.getInt("currPuzzle");
+            if(puzzleListChoice != null)
+            {
+                currPuzzle = puzzleListChoice;
+            }
+        }
+        //currPuzzle = db.getCurrentLevel();
+        //if(currPuzzle == -1)
+         //   currPuzzle = 0;
+
         boardView = (BoardView) findViewById( R.id.boardview );
         boardView.setWinHandler(new OnGameWonEventHandler(){
             public void win(){

@@ -1,6 +1,7 @@
 package com.example.RushHour.Activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
@@ -52,10 +53,15 @@ public class PuzzlesActivity extends Activity
 
     @Override
     public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
-
-        //Start GameActivity with the puzzle id chosen from the list.
-
-        Toast.makeText(getApplicationContext(), ((TextView) view).getText(),
-                Toast.LENGTH_SHORT).show();
+        CharSequence curr = ((TextView)view).getText();
+        String c = curr.toString();
+        Character s = c.charAt(7);
+        Intent intent = new Intent( this, GameActivity.class );
+        Bundle bundle = new Bundle();
+        bundle.putInt("currPuzzle", Integer.parseInt(s.toString()));
+        intent.putExtras(bundle);
+        startActivity( intent );
+        //Toast.makeText(getApplicationContext(), ((TextView) view).getText(),
+        //        Toast.LENGTH_SHORT).show();
     }
 }
