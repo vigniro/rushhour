@@ -16,10 +16,11 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String COLUMN_ID = "_id";
 
     public static final String TABLE_CURRENT_LEVEL = "current_level";
+    public static final String COLUMN_CURRENT_LEVEL_ID = "_level_id";
 
 
     public static final String[] TableLevelsFinishedCols = {COLUMN_ID};
-    public static final String[] TableCurrentLevelCols = {COLUMN_ID};
+    public static final String[] TableCurrentLevelCols = {COLUMN_ID, COLUMN_CURRENT_LEVEL_ID};
 
     private static final String DATABASE_NAME = "RushHour.db";
     private static final int DATABASE_VERSION = 1;
@@ -30,7 +31,7 @@ public class DbHelper extends SQLiteOpenHelper {
             + TABLE_LEVELS_FINISHED + "(" + COLUMN_ID + " integer unique);";
             //Table to store the current level we're on. Should only hold 1 record at all times.
     private static final String DATABASE_CREATE_SECOND = " create table "
-            + TABLE_CURRENT_LEVEL + "(" + COLUMN_ID + " integer unique);";
+            + TABLE_CURRENT_LEVEL + "(" + COLUMN_ID + " primary key autoincrement, " + COLUMN_CURRENT_LEVEL_ID + " unique not null);";
 
     public DbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -42,7 +43,7 @@ public class DbHelper extends SQLiteOpenHelper {
         database.execSQL(DATABASE_CREATE_SECOND);
         //Initialize the current_level table with the ID of the first level - since if we're creating the DB that means that the player is on level 0.
         //Levels are 0-based indexed.
-        database.execSQL("INSERT INTO " + TABLE_CURRENT_LEVEL + " VALUES(0)");
+        database.execSQL("INSERT INTO " + TABLE_CURRENT_LEVEL + " VALUES(1, 0)");
     }
 
     @Override
