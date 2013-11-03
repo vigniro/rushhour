@@ -34,8 +34,8 @@ public class RushHourAdapter {
             This seems to be needed for querying the tables, and it's more verbose if we simply
             query on all columns (can be thought of as SELECT * FROM TABLE).
      */
-    private String[] LevelsFinishedColumns = {DbHelper.COLUMN_ID};
-    private String[] CurrentPositionColumns = {DbHelper.COLUMN_CURRENT_LEVEL, DbHelper.COLUMN_POSITON};
+    private String[] LevelsFinishedColumns = DbHelper.TableLevelsFinishedCols;
+    private String[] CurrentLevelColumns = DbHelper.TableCurrentLevelCols;
 
     public RushHourAdapter(Context c) {
         context = c;
@@ -67,38 +67,6 @@ public class RushHourAdapter {
         return value;
     }
 
-
-    /*
-            Adds an entry to the LEVELS_FINISHED table so that we can keep track of the levels that
-            the player has finished.
-
-            Accepts an integer levelID as a parameter.
-     */
-    public void markFinishedLevel(int levelID) {
-        ContentValues values = new ContentValues();
-        values.put(DbHelper.COLUMN_ID, levelID);
-
-        //No idea why we need null here.
-        System.out.println("Level ID: " + levelID);
-        try {
-            long insertId = db.insert(DbHelper.TABLE_LEVELS_FINISHED, null, values);
-        }
-        catch (SQLException e) {
-            System.out.println("SQL EXCEPTION!");
-            System.out.println(e);
-        }
-
-        /* From tutorial. Probably deletable - but keeping it here if needed for future reference.
-        Cursor cursor = database.query(DbHelper.TABLE_LEVELS_FINISHED,
-                allColumns, DbHelper.COLUMN_ID + " = " + insertId, null,
-                null, null, null);
-        cursor.moveToFirst();
-        Comment newComment = cursorToComment(cursor);
-        cursor.close();
-        return newComment;
-        */
-    }
-
     /*
             Removes the entry for a level with the given ID from the LEVELS_FINISHED table.
             Usable for example if the user wants to forget a finished level, or if we want to allow the user to reset the game.
@@ -107,7 +75,7 @@ public class RushHourAdapter {
         System.out.println("Comment deleted with id: " + levelID);
 
         db.delete(DbHelper.TABLE_LEVELS_FINISHED, DbHelper.COLUMN_ID
-                + " = " + levelID + 1, null);
+                + " = " + levelID, null);
     }
 
     /*
@@ -132,11 +100,41 @@ public class RushHourAdapter {
         return levels;
     }
 
+    public int getCurrentLevel() {
+
+        openToRead();
+        Cursor cursor = db.query(DbHelper.TABLE_CURRENT_LEVEL,
+                CurrentLevelColumns, null, null, null, null, null);
+
+        //Set to -1 for debugging purposes.
+        int currentLevel = -1;
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()) {
+            currentLevel = (int)cursor.getLong(0);
+            cursor.moveToNext();
+        }
+        cursor.close();
+        close();
+        return currentLevel;
+    }
+
+    public void setCurrentLevel(int levelID) {
+        openToWrite();
+
+        String[] cols = DbHelper.TableCurrentLevelCols;
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(cols[0], levelID );
+
+        db.execSQL("DELETE FROM TABLE " + dbHelper.TABLE_CURRENT_LEVEL + " WHERE _id=1");
+        db.insert(DbHelper.TABLE_CURRENT_LEVEL, null, contentValues);
+        close();
+    }
+
+
     public void reinitDatabase() {
         openToWrite();
         dbHelper.reinitDatabase(db);
         close();
-
     }
 
 

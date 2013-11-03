@@ -217,7 +217,7 @@ public class BoardView extends View {
         switch ( event.getAction() ) {
             case MotionEvent.ACTION_DOWN:
                 m_movingBlock = findBlock(x, y);
-                if (m_movingBlock != null) {
+                if (m_movingBlock != null && m_movingBlock.type != BlockType.GOAL) {
                     scanLegalMoves();
                     //System.out.println("legalForward: " + legalBackwards + ", legalForward: " + legalForward);
                     if(m_movingBlock.orientation.equalsIgnoreCase("H")){
@@ -230,7 +230,7 @@ public class BoardView extends View {
                 break;
 
             case MotionEvent.ACTION_UP:
-                if ( m_movingBlock != null ) {
+                if ( m_movingBlock != null && m_movingBlock.type != BlockType.GOAL) {
                     //printBoolBoard(m_boolBoard);
                     updateBoolBoard(m_movingBlock, false); // Remove the block from the boolBoard before updating
                     updateMovedBlock(m_movingBlock);       // Update the block
@@ -240,7 +240,7 @@ public class BoardView extends View {
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
-                if ( m_movingBlock != null ) {
+                if ( m_movingBlock != null && m_movingBlock.type != BlockType.GOAL) {
 
                     if(m_movingBlock.orientation.equalsIgnoreCase("H")){
                         dx = x-deltaX;
