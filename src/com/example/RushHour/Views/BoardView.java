@@ -11,15 +11,14 @@ package com.example.RushHour.Views;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.*;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.RectShape;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 import com.example.RushHour.GameObjects.Block;
 import com.example.RushHour.GameObjects.BlockType;
-import com.example.RushHour.OnMoveEventHandler;
+import com.example.RushHour.OnGameWonEventHandler;
 import com.example.RushHour.GameObjects.Puzzle;
 import com.example.RushHour.R;
 
@@ -41,7 +40,7 @@ public class BoardView extends View {
     Paint blockPaint;
     Paint goalPaint;
     Paint playerPaint;
-    private OnMoveEventHandler m_moveHandler = null;
+    private OnGameWonEventHandler winHandler = null;
     ArrayList<Block> blocks;
     Bitmap bmm;
     Block goalBlock;
@@ -60,6 +59,11 @@ public class BoardView extends View {
         m_paint.setStyle( Paint.Style.FILL );
         configurePaint();
 
+    }
+
+    public void setWinHandler(OnGameWonEventHandler handler)
+    {
+        this.winHandler = handler;
     }
 
     public void configurePaint(){
@@ -256,10 +260,8 @@ public class BoardView extends View {
                     if(m_movingBlock.orientation.equalsIgnoreCase("H")){
                         dx = x-deltaX;
 
-                        if (puzzleWon(dx))
-                        {
-                            System.out.println("You won!");
-                        }
+                        if(checkIfSolved(dx))
+                            //do nothing
 
                         if (legalBackwards*m_cellWidth <= dx && dx+m_movingBlock.getRect().width() <= (legalForward+1)*m_cellWidth) {
                             distX = dx - m_movingBlock.left*m_cellWidth;
@@ -293,10 +295,6 @@ public class BoardView extends View {
         }
 
         return true;
-    }
-
-    public void setMoveEventHandler( OnMoveEventHandler handler ) {
-        m_moveHandler = handler;
     }
 
     private Block findBlock(int x, int y) {
@@ -352,8 +350,12 @@ public class BoardView extends View {
         }
     }
 
-    private boolean puzzleWon (int x) {
+    private boolean checkIfSolved(int x) {
         if (x+m_movingBlock.getRect().width() > goalBlock.getRect().left && m_movingBlock.type == BlockType.PLAYER) {
+            System.out.println("You won!");
+            if(winHandler != null){
+                winHandler.win();
+            }
             return true;
         }
         return false;
