@@ -20,6 +20,8 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String COLUMN_POSITON = "_position";
 
 
+    public static final String[] TableLevelsFinishedCols = {"_id"};
+
     private static final String DATABASE_NAME = "RushHour.db";
     private static final int DATABASE_VERSION = 1;
 

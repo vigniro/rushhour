@@ -25,8 +25,9 @@ import android.database.sqlite.SQLiteDatabase;
 
 public class RushHourAdapter {
     // Database fields
-    private SQLiteDatabase database;
+    private SQLiteDatabase db;
     private DbHelper dbHelper;
+    private Context context;
 
     /*
             String array representation of the available columns of each table.
@@ -36,17 +37,36 @@ public class RushHourAdapter {
     private String[] LevelsFinishedColumns = {DbHelper.COLUMN_ID};
     private String[] CurrentPositionColumns = {DbHelper.COLUMN_CURRENT_LEVEL, DbHelper.COLUMN_POSITON};
 
-    public RushHourAdapter(Context context) {
-        dbHelper = new DbHelper(context);
+    public RushHourAdapter(Context c) {
+        context = c;
     }
 
-    public void open() throws SQLException {
-        database = dbHelper.getWritableDatabase();
+    public RushHourAdapter openToRead() {
+        dbHelper = new DbHelper( context );
+        db = dbHelper.getReadableDatabase();
+        return this;
+    }
+
+    public RushHourAdapter openToWrite() {
+        dbHelper = new DbHelper( context  );
+        db = dbHelper.getWritableDatabase();
+        return this;
     }
 
     public void close() {
-        dbHelper.close();
+        db.close();
     }
+
+    public long markLevelAsFinished(int levelID) {
+        String[] cols = DbHelper.TableLevelsFinishedCols;
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(cols[0], ((Integer)levelID).toString() );
+        openToWrite();
+        long value = db.insert(DbHelper.TABLE_LEVELS_FINISHED, null, contentValues);
+        close();
+        return value;
+    }
+
 
     /*
             Adds an entry to the LEVELS_FINISHED table so that we can keep track of the levels that
@@ -59,7 +79,14 @@ public class RushHourAdapter {
         values.put(DbHelper.COLUMN_ID, levelID);
 
         //No idea why we need null here.
-        long insertId = database.insert(DbHelper.TABLE_LEVELS_FINISHED, null, values);
+        System.out.println("Level ID: " + levelID);
+        try {
+            long insertId = db.insert(DbHelper.TABLE_LEVELS_FINISHED, null, values);
+        }
+        catch (SQLException e) {
+            System.out.println("SQL EXCEPTION!");
+            System.out.println(e);
+        }
 
         /* From tutorial. Probably deletable - but keeping it here if needed for future reference.
         Cursor cursor = database.query(DbHelper.TABLE_LEVELS_FINISHED,
@@ -79,8 +106,8 @@ public class RushHourAdapter {
     public void deleteFinishedLevel(int levelID) {
         System.out.println("Comment deleted with id: " + levelID);
 
-        database.delete(DbHelper.TABLE_LEVELS_FINISHED, DbHelper.COLUMN_ID
-                + " = " + levelID, null);
+        db.delete(DbHelper.TABLE_LEVELS_FINISHED, DbHelper.COLUMN_ID
+                + " = " + levelID + 1, null);
     }
 
     /*
@@ -89,7 +116,8 @@ public class RushHourAdapter {
     public List<Integer> getFinishedLevels() {
         List<Integer> levels = new ArrayList<Integer>();
 
-        Cursor cursor = database.query(DbHelper.TABLE_LEVELS_FINISHED,
+        openToRead();
+        Cursor cursor = db.query(DbHelper.TABLE_LEVELS_FINISHED,
                 LevelsFinishedColumns, null, null, null, null, null);
 
         cursor.moveToFirst();
@@ -100,6 +128,7 @@ public class RushHourAdapter {
         }
         // make sure to close the cursor
         cursor.close();
+        close();
         return levels;
     }
 

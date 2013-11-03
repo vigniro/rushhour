@@ -77,11 +77,18 @@ public class GameActivity extends Activity {
     public void buttonWin(View view)
     {
         try{
-            db.markFinishedLevel(currPuzzle);
+            db.markLevelAsFinished(currPuzzle);
         }catch(Exception e)
         {
             System.out.println(e.getMessage());
         }
+
+        List<Integer> levels = db.getFinishedLevels();
+
+        for(Integer level : levels) {
+            System.out.println("Level finished: " + level);
+        }
+
 
         nextPuzzle();
     }
