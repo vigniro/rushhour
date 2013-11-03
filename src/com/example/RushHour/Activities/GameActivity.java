@@ -37,9 +37,15 @@ public class GameActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.game);
-        //db = new RushHourAdapter(this);
+        db = new RushHourAdapter(this);
 
-        currPuzzle = 0;
+        //currPuzzle = 0;
+        //DEBUG THIS BITCH!!!!!!!!!!!!!!!!!!!!
+        currPuzzle = db.getCurrentLevel();
+        //if(currPuzzle == -1)
+        //   currPuzzle = 0;
+
+
         if(this.getIntent().hasExtra("currPuzzle"))
         {
             Bundle parameters = this.getIntent().getExtras();
@@ -49,9 +55,6 @@ public class GameActivity extends Activity {
                 currPuzzle = puzzleListChoice;
             }
         }
-        //currPuzzle = db.getCurrentLevel();
-        //if(currPuzzle == -1)
-         //   currPuzzle = 0;
 
         boardView = (BoardView) findViewById( R.id.boardview );
         boardView.setWinHandler(new OnGameWonEventHandler(){
