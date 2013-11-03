@@ -42,6 +42,7 @@ public class GameActivity extends Activity {
         //currPuzzle = 0;
         //DEBUG THIS BITCH!!!!!!!!!!!!!!!!!!!!
         currPuzzle = db.getCurrentLevel();
+        System.out.println("CURRPuZZ IN GAME BLA : " + currPuzzle);
         //if(currPuzzle == -1)
         //   currPuzzle = 0;
 

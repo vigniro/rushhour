@@ -116,6 +116,7 @@ public class RushHourAdapter {
         }
         cursor.close();
         close();
+        System.out.println("CURRENT LEVEL ID: " + currentLevel);
         return currentLevel;
     }
 
