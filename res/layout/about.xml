@@ -4,8 +4,17 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
+    <TextView android:id="@+id/aboutHeadline"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textAlignment="center"
+              android:textSize="20sp"
+              android:text="Rush Hour" />
+
     <TextView android:id="@+id/aboutText"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:text="This is an about page!" />
+              android:textSize="16sp"
+              android:singleLine="false"
+            />
 </LinearLayout>

@@ -14,11 +14,13 @@ public class Puzzle implements Serializable{
     private int id;
     private int level;
     public ArrayList<Block> blocks;
+    public boolean completed;
 
     public Puzzle(int id, int level, String setup){
         this.id = id;
         this.level = level;
-        blocks = new ArrayList<Block>();
+        this.blocks = new ArrayList<Block>();
+        this.completed = false;
         parseBlockSetup(setup);
     }
 
@@ -51,7 +53,7 @@ public class Puzzle implements Serializable{
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
-        sb.append("Puzzle " + id + " (Level " + level + ")");
+        sb.append("Puzzle " + id + " (Lvl " + level + ")" + (completed ? "     Finished" : ""));
         return sb.toString();
     }
 }

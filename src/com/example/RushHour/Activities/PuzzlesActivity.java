@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
+import com.example.RushHour.DAO.RushHourAdapter;
 import com.example.RushHour.GameObjects.Puzzle;
 import com.example.RushHour.R;
 import com.example.RushHour.XMLParser;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,6 +31,13 @@ public class PuzzlesActivity extends Activity
         XMLParser parser = new XMLParser();
         ArrayList<Puzzle> puzzles = parser.parsePuzzleFile();//(ArrayList<Puzzle>)i.getSerializableExtra("puzzles");
 
+        RushHourAdapter db = new RushHourAdapter(this);
+        List<Integer> levels = db.getFinishedLevels();
+        if(levels != null || levels.size() == 0){
+            for(Integer lvl: levels){
+                puzzles.get(lvl).completed = true;
+            }
+        }
         listView = (ListView) findViewById(R.id.puzzleList);
         listView.setOnItemClickListener(this);
 
