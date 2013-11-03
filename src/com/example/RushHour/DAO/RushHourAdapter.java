@@ -78,6 +78,7 @@ public class RushHourAdapter {
      */
     public void deleteFinishedLevel(int levelID) {
         System.out.println("Comment deleted with id: " + levelID);
+
         database.delete(DbHelper.TABLE_LEVELS_FINISHED, DbHelper.COLUMN_ID
                 + " = " + levelID, null);
     }
