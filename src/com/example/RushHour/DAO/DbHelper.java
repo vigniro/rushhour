@@ -25,11 +25,12 @@ public class DbHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
 
     // Database creation sql statement
-    private static final String DATABASE_CREATE = "create table "
+    private static final String DATABASE_CREATE_FIRST = "create table "
             //Table that simply stores the ID's of levels that the player has finished.
-            + TABLE_LEVELS_FINISHED + "(" + COLUMN_ID + " integer unique);"
+            + TABLE_LEVELS_FINISHED + "(" + COLUMN_ID + " integer unique);";
             //Table to store the current level we're on. Should only hold 1 record at all times.
-            + "create table " + TABLE_CURRENT_LEVEL + "(" + COLUMN_ID + " integer unique);";
+    private static final String DATABASE_CREATE_SECOND = " create table "
+            + TABLE_CURRENT_LEVEL + "(" + COLUMN_ID + " integer unique);";
 
     public DbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -37,10 +38,11 @@ public class DbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase database) {
-        database.execSQL(DATABASE_CREATE);
+        database.execSQL(DATABASE_CREATE_FIRST);
+        database.execSQL(DATABASE_CREATE_SECOND);
         //Initialize the current_level table with the ID of the first level - since if we're creating the DB that means that the player is on level 0.
         //Levels are 0-based indexed.
-        database.execSQL("INSERT INTO " + TABLE_CURRENT_LEVEL + " VALUES(1, 0)");
+        database.execSQL("INSERT INTO " + TABLE_CURRENT_LEVEL + " VALUES(0)");
     }
 
     @Override
