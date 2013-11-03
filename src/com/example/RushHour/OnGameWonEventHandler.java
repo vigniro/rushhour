@@ -7,6 +7,6 @@ package com.example.RushHour;
  * Time: 14:36
  * To change this template use File | Settings | File Templates.
  */
-public interface OnMoveEventHandler {
-    void onMove( int col, int row );
+public interface OnGameWonEventHandler {
+    void win();
 }
