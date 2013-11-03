@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import com.example.RushHour.DAO.RushHourAdapter;
 import com.example.RushHour.GameObjects.Puzzle;
 import com.example.RushHour.R;
 
@@ -22,8 +23,8 @@ public class MenuActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.menu);
-        //XMLParser parser = new XMLParser();
-        //puzzles = parser.parsePuzzleFile();
+        RushHourAdapter db = new RushHourAdapter(this);
+        db.reinitDatabase();
     }
 
     public void buttonPlay( View view ) {

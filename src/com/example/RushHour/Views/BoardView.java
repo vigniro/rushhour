@@ -52,6 +52,7 @@ public class BoardView extends View {
     int distX, distY;
     int currBlockIndex;
     Rect m_rect = new Rect();
+
     public BoardView(Context context, AttributeSet attrs) {
         super(context, attrs);
         m_paint.setColor(Color.rgb(244, 222, 163));
@@ -66,7 +67,7 @@ public class BoardView extends View {
     }
 
     public void configurePaint(){
-
+        /*
         Resources res = getResources();
         BitmapShader shader;
         Bitmap bm;
@@ -75,41 +76,26 @@ public class BoardView extends View {
 
         bmm = Bitmap.createBitmap(BitmapFactory.decodeResource(res, R.drawable.brick3256, options));
         shader = new BitmapShader(bmm, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
-
+                     */
         blockPaint = new Paint();
         blockPaint.setAntiAlias(true);
         blockPaint.setStyle(Paint.Style.FILL);
-        blockPaint.setShader(shader);
+        //blockPaint.setShader(shader);
+        blockPaint.setColor(Color.BLUE);
 
-        bm = Bitmap.createBitmap(BitmapFactory.decodeResource(res, R.drawable.playerbrick, options));
-        shader = new BitmapShader(bm, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
-
+        //bm = Bitmap.createBitmap(BitmapFactory.decodeResource(res, R.drawable.playerbrick, options));
+        //shader = new BitmapShader(bm, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
         playerPaint = new Paint();
         playerPaint.setAntiAlias(true);
-        blockPaint.setStyle(Paint.Style.FILL);
-        playerPaint.setShader(shader);
+        playerPaint.setStyle(Paint.Style.FILL);
+        playerPaint.setColor(Color.RED);
 
-        //bm = Bitmap.createBitmap(BitmapFactory.decodeResource(res, R.drawable.brick1));
-        //shader = new BitmapShader(bm, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+        //playerPaint.setShader(shader);
+
         goalPaint = new Paint();
-        //goalPaint.setAntiAlias(true);
-        //goalPaint.setShader(shader);
         goalPaint.setColor(Color.DKGRAY);
-        blockPaint.setStyle(Paint.Style.FILL);
+        goalPaint.setStyle(Paint.Style.FILL);
 
-        //RectF rect = new RectF(0.0f, 0.0f,     width, height);
-
-        // rect contains the bounds of the shape
-        // radius is the radius in pixels of the rounded corners
-        // paint contains the shader that will texture the shape
-        //canvas.drawRoundRect(rect, radius, radius, blockPaint);
-    }
-
-        public static Bitmap rotateBitmap(Bitmap source, float angle)
-    {
-        Matrix matrix = new Matrix();
-        matrix.postRotate(angle);
-        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
     }
 
     public void setBoard( Puzzle puzzle, int width, int height )
@@ -142,6 +128,7 @@ public class BoardView extends View {
     }
 
     public void initBoolBoard() {
+        m_boolBoard = new boolean[COLUMNS][ROWS];
         for (int i=0; i<COLUMNS; i++) {
             for (int j=0; j<ROWS; j++) {
                 m_boolBoard[i][j] = false;
@@ -217,7 +204,6 @@ public class BoardView extends View {
                             r * m_cellHeight + m_cellHeight );
                 m_rect.inset(1,1);
                 canvas.drawRect( m_rect, m_paint );
-
             }
         }
     }
@@ -260,18 +246,21 @@ public class BoardView extends View {
                         dx = x-deltaX;
 
                         if(checkIfSolved(dx))
-                            //do nothing
-
-                        if (legalBackwards*m_cellWidth <= dx && dx+m_movingBlock.getRect().width() <= (legalForward+1)*m_cellWidth) {
-                            distX = dx - m_movingBlock.left*m_cellWidth;
-                            //System.out.println("distX: " + distX);
-                            m_movingBlock.getRect().offsetTo( dx, m_movingBlock.getRect().top );
+                        {
+                            m_movingBlock = null;
                         }
-                        else if (legalBackwards*m_cellWidth > dx) {
-                            m_movingBlock.getRect().offsetTo( legalBackwards*m_cellWidth, m_movingBlock.getRect().top );
-                        }
-                        else {
-                            m_movingBlock.getRect().offsetTo( (legalForward+1)*m_cellWidth-m_movingBlock.getRect().width(), m_movingBlock.getRect().top );
+                        if(m_movingBlock != null){
+                            if (legalBackwards*m_cellWidth <= dx && dx+m_movingBlock.getRect().width() <= (legalForward+1)*m_cellWidth) {
+                                distX = dx - m_movingBlock.left*m_cellWidth;
+                                //System.out.println("distX: " + distX);
+                                m_movingBlock.getRect().offsetTo( dx, m_movingBlock.getRect().top );
+                            }
+                            else if (legalBackwards*m_cellWidth > dx) {
+                                m_movingBlock.getRect().offsetTo( legalBackwards*m_cellWidth, m_movingBlock.getRect().top );
+                            }
+                            else {
+                                m_movingBlock.getRect().offsetTo( (legalForward+1)*m_cellWidth-m_movingBlock.getRect().width(), m_movingBlock.getRect().top );
+                            }
                         }
                     }else{
                         dy = y-deltaY;
