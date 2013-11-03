@@ -18,13 +18,13 @@ import java.util.ArrayList;
  * To change this template use File | Settings | File Templates.
  */
 public class MenuActivity extends Activity {
-    public ArrayList<Puzzle> puzzles;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.menu);
-        RushHourAdapter db = new RushHourAdapter(this);
-        db.reinitDatabase();
+        //RushHourAdapter db = new RushHourAdapter(this);
+        //db.reinitDatabase();
     }
 
     public void buttonPlay( View view ) {
