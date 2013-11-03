@@ -31,7 +31,7 @@ public class DbHelper extends SQLiteOpenHelper {
             + TABLE_LEVELS_FINISHED + "(" + COLUMN_ID + " integer unique);";
             //Table to store the current level we're on. Should only hold 1 record at all times.
     private static final String DATABASE_CREATE_SECOND = " create table "
-            + TABLE_CURRENT_LEVEL + "(" + COLUMN_ID + " primary key autoincrement, " + COLUMN_CURRENT_LEVEL_ID + " unique not null);";
+            + TABLE_CURRENT_LEVEL + "(" + COLUMN_ID + " integer primary key, " + COLUMN_CURRENT_LEVEL_ID + " integer);";
 
     public DbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

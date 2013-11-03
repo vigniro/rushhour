@@ -103,9 +103,10 @@ public class RushHourAdapter {
     public int getCurrentLevel() {
 
         openToRead();
-        Cursor cursor = db.query(DbHelper.TABLE_CURRENT_LEVEL,
-                CurrentLevelColumns, null, null, null, null, null);
 
+        String[] bla = {"*"};
+        Cursor cursor = db.query(DbHelper.TABLE_CURRENT_LEVEL,
+                bla, null, null, null, null, null);
         //Set to -1 for debugging purposes.
         int currentLevel = -1;
         cursor.moveToFirst();
@@ -118,12 +119,14 @@ public class RushHourAdapter {
         return currentLevel;
     }
 
+
     public void setCurrentLevel(int levelID) {
         openToWrite();
 
         String[] cols = DbHelper.TableCurrentLevelCols;
         ContentValues contentValues = new ContentValues();
-        contentValues.put(cols[0], levelID );
+        contentValues.put(cols[0], 1);
+        contentValues.put(cols[1], levelID);
 
         db.execSQL("DELETE FROM TABLE " + dbHelper.TABLE_CURRENT_LEVEL + " WHERE _id=1");
         db.insert(DbHelper.TABLE_CURRENT_LEVEL, null, contentValues);
