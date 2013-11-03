@@ -43,6 +43,9 @@ public class PuzzlesActivity extends Activity
 
     @Override
     public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
+
+        //Start GameActivity with the puzzle id chosen from the list.
+
         Toast.makeText(getApplicationContext(), ((TextView) view).getText(),
                 Toast.LENGTH_SHORT).show();
     }

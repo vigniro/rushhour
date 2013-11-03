@@ -5,8 +5,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
+import android.widget.LinearLayout;
 import com.example.RushHour.DAO.RushHourAdapter;
 import com.example.RushHour.GameObjects.Puzzle;
+import com.example.RushHour.OnGameWonEventHandler;
 import com.example.RushHour.R;
 import com.example.RushHour.RushHour;
 import com.example.RushHour.Views.BoardView;
@@ -32,7 +34,14 @@ public class GameActivity extends Activity {
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //LinearLayout contentPane = (LinearLayout)findViewById(R.id.gameParent);
+
         setContentView(R.layout.game);
+
+
+
+
         db = new RushHourAdapter(this);
          /*
         rushHour = new RushHour();
@@ -46,9 +55,14 @@ public class GameActivity extends Activity {
 
         currPuzzle = 0;
         boardView = (BoardView) findViewById( R.id.boardview );
+        boardView.setWinHandler(new OnGameWonEventHandler(){
+            public void win(){
+                puzzleSolved();
+            }
+        });
+
         ViewTreeObserver vto = boardView.getViewTreeObserver();
         vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-
             @Override
             public void onGlobalLayout() {
                 XMLParser parser = new XMLParser();
@@ -60,18 +74,20 @@ public class GameActivity extends Activity {
 
     }
 
-    public List<Integer> getFinishedLevels()
-    {
+    private void puzzleSolved(){
         try{
-            List<Integer> finishedLevels = db.getFinishedLevels();
-            return finishedLevels;
-        }
-        catch(Exception e)
+            db.markLevelAsFinished(currPuzzle);
+        }catch(Exception e)
         {
             System.out.println(e.getMessage());
         }
 
-        return null;
+        List<Integer> levels = db.getFinishedLevels();
+
+        for(Integer level : levels) {
+            System.out.println("Level finished: " + level);
+        }
+        nextPuzzle();
     }
 
     public void buttonWin(View view)
