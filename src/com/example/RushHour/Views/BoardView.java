@@ -35,15 +35,7 @@ public class BoardView extends View {
     private int radius = 25;
     private char[][] m_board = new char[COLUMNS][ROWS];
 
-    // private boolean[][] m_boolBoard = new boolean[COLUMNS][ROWS];
-    private boolean[][] m_boolBoard = {
-        {false,false,false,false,false,false},
-        {false,false,false,false,false,false},
-        {false,false,false,false,false,false},
-        {false,false,false,false,false,false},
-        {false,false,false,false,false,false},
-        {false,false,false,false,false,false},
-    };
+    private boolean[][] m_boolBoard = new boolean[COLUMNS][ROWS];
 
     private Paint m_paint = new Paint();
     Paint blockPaint;
@@ -109,7 +101,7 @@ public class BoardView extends View {
         //canvas.drawRoundRect(rect, radius, radius, blockPaint);
     }
 
-    public static Bitmap rotateBitmap(Bitmap source, float angle)
+        public static Bitmap rotateBitmap(Bitmap source, float angle)
     {
         Matrix matrix = new Matrix();
         matrix.postRotate(angle);
@@ -121,10 +113,11 @@ public class BoardView extends View {
         blocks = new ArrayList<Block>();
         int cellWidth = width / COLUMNS;
         int cellHeight = height / ROWS;
+        initBoolBoard();
 
         for(Block b: puzzle.blocks)
         {
-            initBoolBoard(b,true);
+            updateBoolBoard(b,true);
             // System.out.println(b.left + ", " + b.top);
             if(b.orientation.equalsIgnoreCase("H")){
                 b.setRect(b.left * cellWidth, b.top * cellHeight,
@@ -140,14 +133,19 @@ public class BoardView extends View {
         //Add goal stripe to the block array
         this.goalBlock = new Block(BlockType.GOAL, 6 * m_cellWidth-10, 2 * m_cellHeight, 6 * m_cellWidth, 3 * m_cellHeight);
         blocks.add(goalBlock);
-        // System.out.println(goalBlock.left);
-        // System.out.println(6 * m_cellWidth-10);
 
-        printBoolBoard(m_boolBoard);
         invalidate();
     }
 
-    public void initBoolBoard(Block b, boolean state) {
+    public void initBoolBoard() {
+        for (int i=0; i<COLUMNS; i++) {
+            for (int j=0; j<ROWS; j++) {
+                m_boolBoard[i][j] = false;
+            }
+        }
+    }
+
+    public void updateBoolBoard(Block b, boolean state) {
         // System.out.println("X: " + b.left + " , Y: " + b.top + " , Orientation: " + b.orientation + " , Size: " + b.size);
         m_boolBoard[b.left][b.top] = state;
         if (b.orientation.equalsIgnoreCase("V")) {
@@ -165,7 +163,7 @@ public class BoardView extends View {
     }
 
     public void printBoolBoard(boolean[][] boolBoard) {
-
+        System.out.println("----------------------------");
         for(int i=0; i<COLUMNS; i++) {
             String tmp = "";
             for(int j=0; j<ROWS; j++) {
@@ -173,10 +171,8 @@ public class BoardView extends View {
             }
             System.out.println(tmp);
         }
+
     }
-
-    //public void isMoveValid()
-
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -227,29 +223,30 @@ public class BoardView extends View {
 
         int x = (int) event.getX();
         int y = (int) event.getY();
-        //System.out.println("x: " + x + " y: " + y);
 
         switch ( event.getAction() ) {
             case MotionEvent.ACTION_DOWN:
                 m_movingBlock = findBlock(x, y);
-                scanLegalMoves();
-                if(m_movingBlock.orientation.equalsIgnoreCase("H")){
-                    deltaX = x-m_movingBlock.left*m_cellWidth;
-                }
-                else {
-                    deltaY = y-m_movingBlock.top*m_cellHeight;
+                if (m_movingBlock != null) {
+                    scanLegalMoves();
+                    //System.out.println("legalForward: " + legalBackwards + ", legalForward: " + legalForward);
+                    if(m_movingBlock.orientation.equalsIgnoreCase("H")){
+                        deltaX = x-m_movingBlock.left*m_cellWidth;
+                    }
+                    else {
+                        deltaY = y-m_movingBlock.top*m_cellHeight;
+                    }
                 }
                 break;
+
             case MotionEvent.ACTION_UP:
                 if ( m_movingBlock != null ) {
                     //printBoolBoard(m_boolBoard);
-                    initBoolBoard(m_movingBlock, false);
-                    //printBoolBoard(m_boolBoard);
-                    updateMovedBlock(m_movingBlock);
-                    initBoolBoard(m_movingBlock, true);
+                    updateBoolBoard(m_movingBlock, false); // Remove the block from the boolBoard before updating
+                    updateMovedBlock(m_movingBlock);       // Update the block
+                    updateBoolBoard(m_movingBlock, true);  // Place the new position of the block into boolBoard
                     //printBoolBoard(m_boolBoard);
                     m_movingBlock = null;
-                    // emit an custom event ....
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -263,10 +260,9 @@ public class BoardView extends View {
                             System.out.println("You won!");
                         }
 
-
                         if (legalBackwards*m_cellWidth <= dx && dx+m_movingBlock.getRect().width() <= (legalForward+1)*m_cellWidth) {
                             distX = dx - m_movingBlock.left*m_cellWidth;
-                            System.out.println("distX: " + distX);
+                            //System.out.println("distX: " + distX);
                             m_movingBlock.getRect().offsetTo( dx, m_movingBlock.getRect().top );
                         }
                         else if (legalBackwards*m_cellWidth > dx) {
@@ -279,7 +275,8 @@ public class BoardView extends View {
                         dy = y-deltaY;
 
                         if (legalBackwards*m_cellHeight <= dy && dy+m_movingBlock.getRect().height() <= (legalForward+1)*m_cellHeight) {
-                            System.out.println("hurray!");
+                            //System.out.println("hurray!");
+                            distY = dy - m_movingBlock.top*m_cellHeight;
                             m_movingBlock.getRect().offsetTo( m_movingBlock.getRect().left, dy );
                         }
                         else if (legalBackwards*m_cellHeight > dy) {
@@ -293,12 +290,7 @@ public class BoardView extends View {
                     break;
                  }
         }
-        /*
-        if ( event.getAction() == MotionEvent.ACTION_DOWN ) {
-            if ( m_moveHandler != null ) {
-                m_moveHandler.onMove( xToCol(x), yToRow(y) );
-            }
-        }      */
+
         return true;
     }
 
@@ -311,12 +303,10 @@ public class BoardView extends View {
             if ( b.getRect().contains( x, y ) ) {
                 currBlockIndex = blocks.indexOf(b);
                 return b;
-
             }
         }
         return null;
     }
-
 
     private void updateMovedBlock(Block movedBlock) {
 
@@ -332,13 +322,14 @@ public class BoardView extends View {
             cellsMoved = Math.abs(distX) / m_cellWidth;
             rest = Math.abs(distX) % m_cellWidth;
 
-            // If the moving block is more than 50% inside the next cell, we shift it there
-            if (rest > m_cellWidth/2) {
+            // If the moving block is more than 25% inside the next cell, we shift it there
+            if (rest > m_cellWidth/4) {
                 cellsMoved++;
             }
 
             //System.out.println("left: " + blocks.get(currBlockIndex).left + "top: " + blocks.get(currBlockIndex).top);
             blocks.get(currBlockIndex).updateHorizontalRect(cellsMoved, leftMove, m_cellWidth);
+            invalidate();
             //System.out.println("left: " + blocks.get(currBlockIndex).left + "top: " + blocks.get(currBlockIndex).top);
         }
         else {
@@ -350,17 +341,18 @@ public class BoardView extends View {
             cellsMoved = Math.abs(distY) / m_cellHeight;
             rest = Math.abs(distY) % m_cellHeight;
 
-            // If the moving block is more than 50% inside the next cell, we shift it there
-            if (rest > m_cellHeight/2) {
+            // If the moving block is more than 25% inside the next cell, we shift it there
+            if (rest > m_cellHeight/4) {
                 cellsMoved++;
             }
 
             blocks.get(currBlockIndex).updateVerticalRect(cellsMoved, upMove, m_cellHeight);
+            invalidate();
         }
     }
 
     private boolean puzzleWon (int x) {
-        if (x+m_movingBlock.getRect().width() > 470) {
+        if (x+m_movingBlock.getRect().width() > goalBlock.getRect().left && m_movingBlock.type == BlockType.PLAYER) {
             return true;
         }
         return false;
@@ -397,7 +389,6 @@ public class BoardView extends View {
             if (!blockOnRight) {
                 legalForward = COLUMNS-1;
             }
-            // System.out.println(legalBackwards + " " + legalForward);
         }
 
         // Orientation of moving block is vertical
@@ -429,8 +420,6 @@ public class BoardView extends View {
             if (!blockBelow) {
                 legalForward = ROWS-1;
             }
-            //System.out.println(legalBackwards + " " + legalForward);
-
         }
 
     }
