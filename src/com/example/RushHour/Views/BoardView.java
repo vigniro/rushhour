@@ -124,7 +124,7 @@ public class BoardView extends View {
 
         for(Block b: puzzle.blocks)
         {
-            initBoolBoard(b);
+            initBoolBoard(b,true);
             // System.out.println(b.left + ", " + b.top);
             if(b.orientation.equalsIgnoreCase("H")){
                 b.setRect(b.left * cellWidth, b.top * cellHeight,
@@ -147,19 +147,19 @@ public class BoardView extends View {
         invalidate();
     }
 
-    public void initBoolBoard(Block b) {
+    public void initBoolBoard(Block b, boolean state) {
         // System.out.println("X: " + b.left + " , Y: " + b.top + " , Orientation: " + b.orientation + " , Size: " + b.size);
-        m_boolBoard[b.left][b.top] = true;
+        m_boolBoard[b.left][b.top] = state;
         if (b.orientation.equalsIgnoreCase("V")) {
-            m_boolBoard[b.left][b.top+1] = true;
+            m_boolBoard[b.left][b.top+1] = state;
             if (b.size == 3) {
-                m_boolBoard[b.left][b.top+2] = true;
+                m_boolBoard[b.left][b.top+2] = state;
             }
         }
         else { // orientation of block is horizontal
-            m_boolBoard[b.left+1][b.top] = true;
+            m_boolBoard[b.left+1][b.top] = state;
             if (b.size == 3) {
-                m_boolBoard[b.left+2][b.top] = true;
+                m_boolBoard[b.left+2][b.top] = state;
             }
         }
     }
@@ -227,7 +227,7 @@ public class BoardView extends View {
 
         int x = (int) event.getX();
         int y = (int) event.getY();
-        System.out.println("x: " + x + " y: " + y);
+        //System.out.println("x: " + x + " y: " + y);
 
         switch ( event.getAction() ) {
             case MotionEvent.ACTION_DOWN:
@@ -242,8 +242,12 @@ public class BoardView extends View {
                 break;
             case MotionEvent.ACTION_UP:
                 if ( m_movingBlock != null ) {
+                    //printBoolBoard(m_boolBoard);
+                    initBoolBoard(m_movingBlock, false);
+                    //printBoolBoard(m_boolBoard);
                     updateMovedBlock(m_movingBlock);
-                    updateBoolBoard();
+                    initBoolBoard(m_movingBlock, true);
+                    //printBoolBoard(m_boolBoard);
                     m_movingBlock = null;
                     // emit an custom event ....
                 }
@@ -254,7 +258,6 @@ public class BoardView extends View {
                     if(m_movingBlock.orientation.equalsIgnoreCase("H")){
                         dx = x-deltaX;
 
-                        //System.out.println(m_movingBlock.left + " " + m_cellWidth + " " + m_movingBlock.getRect().width() + " x: " + x);
                         if (puzzleWon(dx))
                         {
                             System.out.println("You won!");
@@ -262,8 +265,7 @@ public class BoardView extends View {
 
 
                         if (legalBackwards*m_cellWidth <= dx && dx+m_movingBlock.getRect().width() <= (legalForward+1)*m_cellWidth) {
-                            //System.out.println("hurray!");
-                            distX = Math.abs(dx - m_movingBlock.left*m_cellWidth);
+                            distX = dx - m_movingBlock.left*m_cellWidth;
                             System.out.println("distX: " + distX);
                             m_movingBlock.getRect().offsetTo( dx, m_movingBlock.getRect().top );
                         }
@@ -273,7 +275,6 @@ public class BoardView extends View {
                         else {
                             m_movingBlock.getRect().offsetTo( (legalForward+1)*m_cellWidth-m_movingBlock.getRect().width(), m_movingBlock.getRect().top );
                         }
-                        updateMovedBlock(m_movingBlock);
                     }else{
                         dy = y-deltaY;
 
@@ -287,7 +288,6 @@ public class BoardView extends View {
                         else {
                             m_movingBlock.getRect().offsetTo(m_movingBlock.getRect().left, (legalForward+1)*m_cellHeight-m_movingBlock.getRect().height());
                         }
-                        updateMovedBlock(m_movingBlock);
                     }
                     invalidate();
                     break;
@@ -319,11 +319,44 @@ public class BoardView extends View {
 
 
     private void updateMovedBlock(Block movedBlock) {
-         blocks.get(currBlockIndex).updateRect(movedBlock.getRect());
-    }
 
-    private void updateBoolBoard() {
+        int rest=0, cellsMoved=0;
+        boolean leftMove = false, upMove = false;
 
+        if(movedBlock.orientation.equalsIgnoreCase("H")) {
+            // Block moved to the left
+            if(distX < 0) {
+                leftMove = true;
+            }
+
+            cellsMoved = Math.abs(distX) / m_cellWidth;
+            rest = Math.abs(distX) % m_cellWidth;
+
+            // If the moving block is more than 50% inside the next cell, we shift it there
+            if (rest > m_cellWidth/2) {
+                cellsMoved++;
+            }
+
+            //System.out.println("left: " + blocks.get(currBlockIndex).left + "top: " + blocks.get(currBlockIndex).top);
+            blocks.get(currBlockIndex).updateHorizontalRect(cellsMoved, leftMove, m_cellWidth);
+            //System.out.println("left: " + blocks.get(currBlockIndex).left + "top: " + blocks.get(currBlockIndex).top);
+        }
+        else {
+            // Block moved to the right
+            if(distY < 0) {
+                upMove = true;
+            }
+
+            cellsMoved = Math.abs(distY) / m_cellHeight;
+            rest = Math.abs(distY) % m_cellHeight;
+
+            // If the moving block is more than 50% inside the next cell, we shift it there
+            if (rest > m_cellHeight/2) {
+                cellsMoved++;
+            }
+
+            blocks.get(currBlockIndex).updateVerticalRect(cellsMoved, upMove, m_cellHeight);
+        }
     }
 
     private boolean puzzleWon (int x) {
@@ -334,9 +367,6 @@ public class BoardView extends View {
     }
 
     private void scanLegalMoves() {
-        // Init
-        //legalBackwards=-1;
-        //legalForward=-1;
 
         // Orientation of moving block is horizontal
         if(m_movingBlock.orientation.equalsIgnoreCase("H")) {
@@ -367,7 +397,7 @@ public class BoardView extends View {
             if (!blockOnRight) {
                 legalForward = COLUMNS-1;
             }
-            System.out.println(legalBackwards + " " + legalForward);
+            // System.out.println(legalBackwards + " " + legalForward);
         }
 
         // Orientation of moving block is vertical
@@ -399,18 +429,10 @@ public class BoardView extends View {
             if (!blockBelow) {
                 legalForward = ROWS-1;
             }
-            System.out.println(legalBackwards + " " + legalForward);
+            //System.out.println(legalBackwards + " " + legalForward);
 
         }
 
-    }
-
-    private int xToCol( int x ) {
-        return x / m_cellWidth;
-    }
-
-    private int yToRow( int y ) {
-        return y / m_cellHeight;
     }
 
 }
