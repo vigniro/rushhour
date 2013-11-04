@@ -30,6 +30,7 @@ public class GameActivity extends Activity {
     BoardView boardView;
     RushHour rushHour;
     ArrayList<Puzzle> puzzles;
+    ArrayList<Puzzle> cp_puzzle;
     private int currPuzzle;
     RushHourAdapter db;
 
@@ -71,6 +72,7 @@ public class GameActivity extends Activity {
             public void onGlobalLayout() {
                 XMLParser parser = new XMLParser();
                 puzzles = parser.parsePuzzleFile();//(ArrayList<Puzzle>)i.getSerializableExtra("puzzles");
+                cp_puzzle = parser.parsePuzzleFile();
                 boardView.setBoard(puzzles.get(currPuzzle), boardView.getWidth(), boardView.getHeight());
             }
 
@@ -115,7 +117,7 @@ public class GameActivity extends Activity {
     }
 
     public void buttonReset(View view){
-        boardView.setBoard(puzzles.get(currPuzzle), boardView.getWidth(), boardView.getHeight());
+        boardView.setBoard(cp_puzzle.get(currPuzzle), boardView.getWidth(), boardView.getHeight());
     }
 
     public void buttonSkip(View view){
