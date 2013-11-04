@@ -41,8 +41,8 @@ public class BoardView extends View {
     Paint goalPaint;
     Paint playerPaint;
     private OnGameWonEventHandler winHandler = null;
+    ArrayList<Block> originalBlocks;
     ArrayList<Block> blocks;
-    Bitmap bmm;
     Block goalBlock;
     Block m_movingBlock = null;
     int legalBackwards;
@@ -118,6 +118,7 @@ public class BoardView extends View {
                         b.size * cellHeight + b.top * cellHeight);
                 blocks.add(b);
             }
+
         }
         //Add goal stripe to the block array
         this.goalBlock = new Block(BlockType.GOAL, 6 * m_cellWidth-10, 2 * m_cellHeight, 6 * m_cellWidth, 3 * m_cellHeight);
@@ -233,6 +234,7 @@ public class BoardView extends View {
                     updateBoolBoard(m_movingBlock, true);  // Place the new position of the block into boolBoard
                     m_movingBlock = null;
                 }
+
                 break;
             case MotionEvent.ACTION_MOVE:
                 if ( m_movingBlock != null && m_movingBlock.type != BlockType.GOAL) {

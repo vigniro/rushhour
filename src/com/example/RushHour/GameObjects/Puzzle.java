@@ -24,6 +24,14 @@ public class Puzzle implements Serializable{
         parseBlockSetup(setup);
     }
 
+    public Puzzle(Puzzle puzzle){
+        this.id = puzzle.id;
+        this.level = puzzle.level;
+        this.blocks = puzzle.blocks;
+        this.completed = puzzle.completed;
+    }
+
+
     private void parseBlockSetup(String setup){
         String set[] = setup.split(",");
         for(int i = 0; i < set.length; i++){

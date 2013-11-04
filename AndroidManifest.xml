@@ -14,7 +14,6 @@
         </activity>
         <activity android:name=".Activities.GameActivity" android:label="Game activity"/>
         <activity android:name=".Activities.PuzzlesActivity" android:label="Puzzles Activity"/>
-        <activity android:name=".Activities.OptionsActivity" android:label="Options activity"/>
         <activity android:name=".Activities.AboutActivity" android:label="About activity"/>
     </application>
 </manifest>

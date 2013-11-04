@@ -20,13 +20,6 @@
         android:onClick="buttonPuzzles"
         />
     <Button
-            android:id="@+id/buttonOptions"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Options"
-            android:onClick="buttonOptions"
-            />
-    <Button
             android:id="@+id/buttonAbout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

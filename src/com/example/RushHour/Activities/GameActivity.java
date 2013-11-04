@@ -3,15 +3,12 @@ package com.example.RushHour.Activities;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
-import android.widget.LinearLayout;
 import com.example.RushHour.DAO.RushHourAdapter;
 import com.example.RushHour.GameObjects.Puzzle;
 import com.example.RushHour.OnGameWonEventHandler;
 import com.example.RushHour.R;
-import com.example.RushHour.RushHour;
 import com.example.RushHour.Views.BoardView;
 import com.example.RushHour.XMLParser;
 
@@ -28,9 +25,7 @@ import java.util.List;
 public class GameActivity extends Activity {
 
     BoardView boardView;
-    RushHour rushHour;
     ArrayList<Puzzle> puzzles;
-    ArrayList<Puzzle> cp_puzzle;
     private int currPuzzle;
     RushHourAdapter db;
 
@@ -39,15 +34,8 @@ public class GameActivity extends Activity {
 
         setContentView(R.layout.game);
         db = new RushHourAdapter(this);
-        db.reinitDatabase();
-        if(!db.checkDataBase())
-        {
-            db.reinitDatabase();
-        }
-
         currPuzzle = db.getCurrentLevel();
         System.out.println("currPuzzle : " + currPuzzle);
-
 
         if(this.getIntent().hasExtra("currPuzzle"))
         {
@@ -71,13 +59,12 @@ public class GameActivity extends Activity {
             @Override
             public void onGlobalLayout() {
                 XMLParser parser = new XMLParser();
-                puzzles = parser.parsePuzzleFile();//(ArrayList<Puzzle>)i.getSerializableExtra("puzzles");
-                cp_puzzle = parser.parsePuzzleFile();
+                puzzles = parser.parsePuzzleFile();
+
                 boardView.setBoard(puzzles.get(currPuzzle), boardView.getWidth(), boardView.getHeight());
             }
 
         });
-
     }
 
     private void puzzleSolved(){
@@ -89,11 +76,6 @@ public class GameActivity extends Activity {
             System.out.println(e.getMessage());
         }
 
-        List<Integer> levels = db.getFinishedLevels();
-
-        for(Integer level : levels) {
-            System.out.println("Level finished: " + level);
-        }
         nextPuzzle();
     }
 
@@ -106,18 +88,13 @@ public class GameActivity extends Activity {
             System.out.println(e.getMessage());
         }
 
-        List<Integer> levels = db.getFinishedLevels();
-
-        for(Integer level : levels) {
-            System.out.println("Level finished: " + level);
-        }
-
-
         nextPuzzle();
     }
 
     public void buttonReset(View view){
-        boardView.setBoard(cp_puzzle.get(currPuzzle), boardView.getWidth(), boardView.getHeight());
+        XMLParser parser = new XMLParser();
+        puzzles = parser.parsePuzzleFile();
+        boardView.setBoard(puzzles.get(currPuzzle), boardView.getWidth(), boardView.getHeight());
     }
 
     public void buttonSkip(View view){
@@ -134,7 +111,6 @@ public class GameActivity extends Activity {
     @Override
     public void onSaveInstanceState( Bundle savedInstanceState ) {
         super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putString("stateRushHour", rushHour.toString());
     }
 
 }

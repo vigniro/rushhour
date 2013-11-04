@@ -23,8 +23,11 @@ public class MenuActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.menu);
-        //RushHourAdapter db = new RushHourAdapter(this);
-        //db.reinitDatabase();
+        RushHourAdapter db = new RushHourAdapter(this);
+        if(db.checkDataBase())
+        {
+            db.reinitDatabase();
+        }
     }
 
     public void buttonPlay( View view ) {
@@ -36,11 +39,6 @@ public class MenuActivity extends Activity {
         Intent intent = new Intent( this, PuzzlesActivity.class );
         //intent.putExtra("puzzles", puzzles);
         startActivity(intent);
-    }
-
-    public void buttonOptions( View view )  {
-        Intent intent = new Intent( this, OptionsActivity.class );
-        startActivity( intent );
     }
 
     public void buttonAbout( View view ) {
