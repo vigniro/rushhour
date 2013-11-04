@@ -38,16 +38,14 @@ public class GameActivity extends Activity {
 
         setContentView(R.layout.game);
         db = new RushHourAdapter(this);
+        db.reinitDatabase();
         if(!db.checkDataBase())
         {
             db.reinitDatabase();
         }
 
-        //DEBUG THIS BITCH!!!!!!!!!!!!!!!!!!!!
         currPuzzle = db.getCurrentLevel();
-        System.out.println("CURRPuZZ IN GAME BLA : " + currPuzzle);
-        //if(currPuzzle == -1)
-        //   currPuzzle = 0;
+        System.out.println("currPuzzle : " + currPuzzle);
 
 
         if(this.getIntent().hasExtra("currPuzzle"))

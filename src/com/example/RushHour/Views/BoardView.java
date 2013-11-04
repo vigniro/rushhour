@@ -51,7 +51,6 @@ public class BoardView extends View {
     int dx, dy;
     int distX, distY;
     int currBlockIndex;
-    boolean winPossible = false;
     Rect m_rect = new Rect();
 
     public BoardView(Context context, AttributeSet attrs) {
@@ -241,22 +240,20 @@ public class BoardView extends View {
                     if(m_movingBlock.orientation.equalsIgnoreCase("H")){
                         dx = x-deltaX;
 
-                        if(checkIfSolved(dx) && winPossible)
+                        if(checkIfSolved(dx))
                         {
                             m_movingBlock = null;
                         }
+
                         if(m_movingBlock != null){
                             if (legalBackwards*m_cellWidth <= dx && dx+m_movingBlock.getRect().width() <= (legalForward+1)*m_cellWidth) {
-                                winPossible = true;
                                 distX = dx - m_movingBlock.left*m_cellWidth;
                                 m_movingBlock.getRect().offsetTo( dx, m_movingBlock.getRect().top );
                             }
                             else if (legalBackwards*m_cellWidth > dx) {
-                                winPossible = false;
                                 m_movingBlock.getRect().offsetTo( legalBackwards*m_cellWidth, m_movingBlock.getRect().top );
                             }
                             else {
-                                winPossible = false;
                                 m_movingBlock.getRect().offsetTo( (legalForward+1)*m_cellWidth-m_movingBlock.getRect().width(), m_movingBlock.getRect().top );
                             }
                         }
@@ -348,7 +345,7 @@ public class BoardView extends View {
     }
 
     private boolean checkIfSolved(int x) {
-        if (x+m_movingBlock.getRect().width() > goalBlock.getRect().left && m_movingBlock.type == BlockType.PLAYER) {
+        if (x+m_movingBlock.getRect().width() > goalBlock.getRect().left && m_movingBlock.type == BlockType.PLAYER && legalForward == 5) {
             System.out.println("You won!");
             if(winHandler != null){
                 winHandler.win();
