@@ -51,6 +51,7 @@ public class BoardView extends View {
     int dx, dy;
     int distX, distY;
     int currBlockIndex;
+    boolean winPossible = false;
     Rect m_rect = new Rect();
 
     public BoardView(Context context, AttributeSet attrs) {
@@ -108,7 +109,6 @@ public class BoardView extends View {
         for(Block b: puzzle.blocks)
         {
             updateBoolBoard(b,true);
-            // System.out.println(b.left + ", " + b.top);
             if(b.orientation.equalsIgnoreCase("H")){
                 b.setRect(b.left * cellWidth, b.top * cellHeight,
                         b.size * cellWidth + b.left * cellWidth,b.top * cellHeight + cellHeight);
@@ -137,7 +137,6 @@ public class BoardView extends View {
     }
 
     public void updateBoolBoard(Block b, boolean state) {
-        // System.out.println("X: " + b.left + " , Y: " + b.top + " , Orientation: " + b.orientation + " , Size: " + b.size);
         m_boolBoard[b.left][b.top] = state;
         if (b.orientation.equalsIgnoreCase("V")) {
             m_boolBoard[b.left][b.top+1] = state;
@@ -219,7 +218,6 @@ public class BoardView extends View {
                 m_movingBlock = findBlock(x, y);
                 if (m_movingBlock != null && m_movingBlock.type != BlockType.GOAL) {
                     scanLegalMoves();
-                    //System.out.println("legalForward: " + legalBackwards + ", legalForward: " + legalForward);
                     if(m_movingBlock.orientation.equalsIgnoreCase("H")){
                         deltaX = x-m_movingBlock.left*m_cellWidth;
                     }
@@ -231,11 +229,9 @@ public class BoardView extends View {
 
             case MotionEvent.ACTION_UP:
                 if ( m_movingBlock != null && m_movingBlock.type != BlockType.GOAL) {
-                    //printBoolBoard(m_boolBoard);
                     updateBoolBoard(m_movingBlock, false); // Remove the block from the boolBoard before updating
                     updateMovedBlock(m_movingBlock);       // Update the block
                     updateBoolBoard(m_movingBlock, true);  // Place the new position of the block into boolBoard
-                    //printBoolBoard(m_boolBoard);
                     m_movingBlock = null;
                 }
                 break;
@@ -245,20 +241,22 @@ public class BoardView extends View {
                     if(m_movingBlock.orientation.equalsIgnoreCase("H")){
                         dx = x-deltaX;
 
-                        if(checkIfSolved(dx))
+                        if(checkIfSolved(dx) && winPossible)
                         {
                             m_movingBlock = null;
                         }
                         if(m_movingBlock != null){
                             if (legalBackwards*m_cellWidth <= dx && dx+m_movingBlock.getRect().width() <= (legalForward+1)*m_cellWidth) {
+                                winPossible = true;
                                 distX = dx - m_movingBlock.left*m_cellWidth;
-                                //System.out.println("distX: " + distX);
                                 m_movingBlock.getRect().offsetTo( dx, m_movingBlock.getRect().top );
                             }
                             else if (legalBackwards*m_cellWidth > dx) {
+                                winPossible = false;
                                 m_movingBlock.getRect().offsetTo( legalBackwards*m_cellWidth, m_movingBlock.getRect().top );
                             }
                             else {
+                                winPossible = false;
                                 m_movingBlock.getRect().offsetTo( (legalForward+1)*m_cellWidth-m_movingBlock.getRect().width(), m_movingBlock.getRect().top );
                             }
                         }
@@ -266,7 +264,6 @@ public class BoardView extends View {
                         dy = y-deltaY;
 
                         if (legalBackwards*m_cellHeight <= dy && dy+m_movingBlock.getRect().height() <= (legalForward+1)*m_cellHeight) {
-                            //System.out.println("hurray!");
                             distY = dy - m_movingBlock.top*m_cellHeight;
                             m_movingBlock.getRect().offsetTo( m_movingBlock.getRect().left, dy );
                         }
@@ -314,10 +311,15 @@ public class BoardView extends View {
                 cellsMoved++;
             }
 
-            //System.out.println("left: " + blocks.get(currBlockIndex).left + "top: " + blocks.get(currBlockIndex).top);
+            if (leftMove && m_movingBlock.left - cellsMoved < legalBackwards ) {
+                cellsMoved = 0;
+            }
+            else if (!leftMove && m_movingBlock.left + (m_movingBlock.size-1) + cellsMoved > legalForward ) {
+                cellsMoved = 0;
+            }
+
             blocks.get(currBlockIndex).updateHorizontalRect(cellsMoved, leftMove, m_cellWidth);
             invalidate();
-            //System.out.println("left: " + blocks.get(currBlockIndex).left + "top: " + blocks.get(currBlockIndex).top);
         }
         else {
             // Block moved to the right
@@ -331,6 +333,13 @@ public class BoardView extends View {
             // If the moving block is more than 25% inside the next cell, we shift it there
             if (rest > m_cellHeight/4) {
                 cellsMoved++;
+            }
+
+            if (upMove && m_movingBlock.top - cellsMoved < legalBackwards ) {
+                cellsMoved = 0;
+            }
+            else if (!upMove && m_movingBlock.top + (m_movingBlock.size-1) + cellsMoved > legalForward ) {
+                cellsMoved = 0;
             }
 
             blocks.get(currBlockIndex).updateVerticalRect(cellsMoved, upMove, m_cellHeight);

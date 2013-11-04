@@ -56,8 +56,8 @@ public class Block {
         else if (this.left < 6 && !leftMove) {
             this.left += cellsMoved;
         }
-        this.rect.left = this.left*cellWidth;
-        this.rect.right = this.rect.left+this.size*cellWidth;
+        this.rect.left = this.left*cellWidth+10;
+        this.rect.right = this.rect.left+this.size*cellWidth-20;
     }
 
     public void updateVerticalRect(int cellsMoved, boolean upMove, int cellHeight)
@@ -69,8 +69,8 @@ public class Block {
             this.top += cellsMoved;
         }
 
-        this.rect.top = this.top*cellHeight;
-        this.rect.bottom = this.rect.top+this.size*cellHeight;
+        this.rect.top = this.top*cellHeight+10;
+        this.rect.bottom = this.rect.top+this.size*cellHeight-20;
     }
 
     public Rect getRect()
