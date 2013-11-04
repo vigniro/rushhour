@@ -30,7 +30,7 @@ public class PuzzlesActivity extends Activity
 
         //Populate the view with a list of puzzles
         XMLParser parser = new XMLParser();
-        ArrayList<Puzzle> puzzles = parser.parsePuzzleFile();//(ArrayList<Puzzle>)i.getSerializableExtra("puzzles");
+        ArrayList<Puzzle> puzzles = parser.parsePuzzleFile();
 
         RushHourAdapter db = new RushHourAdapter(this);
         List<Integer> levels = db.getFinishedLevels();
@@ -58,9 +58,11 @@ public class PuzzlesActivity extends Activity
         Character s = c.charAt(7);
         Intent intent = new Intent( this, GameActivity.class );
         Bundle bundle = new Bundle();
-        bundle.putInt("currPuzzle", Integer.parseInt(s.toString()));
+        bundle.putInt("currPuzzle", Integer.parseInt(s.toString())-1);
         intent.putExtras(bundle);
         startActivity( intent );
+
+        finish();
         //Toast.makeText(getApplicationContext(), ((TextView) view).getText(),
         //        Toast.LENGTH_SHORT).show();
     }

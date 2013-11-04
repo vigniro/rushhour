@@ -46,7 +46,9 @@ public class GameActivity extends Activity {
                 currPuzzle = puzzleListChoice;
             }
         }
-
+        else{
+            currPuzzle = db.getCurrentLevel();
+        }
         boardView = (BoardView) findViewById( R.id.boardview );
         boardView.setWinHandler(new OnGameWonEventHandler(){
             public void win(){
